@@ -25,8 +25,6 @@ const SocketContextComponent: React.FunctionComponent<
     autoConnect: false,
   })
 
-  console.log({ socket })
-
   useEffect(() => {
     /** Connect to the Web Socket */
     socket.connect()
@@ -45,10 +43,10 @@ const SocketContextComponent: React.FunctionComponent<
 
   const StartListeners = () => {
     /** User connected event */
-    socket.on('user_connected', (users: string[]) => {
-      console.info('User connected, new user list recieved')
+    socket.on('user_connected', (user: string) => {
+      console.info('User connected')
 
-      SocketDispatch({ type: 'update_users', payload: users })
+      SocketDispatch({ type: 'add_user', payload: user })
     })
 
     /** User disconnected event */
@@ -84,11 +82,14 @@ const SocketContextComponent: React.FunctionComponent<
   const SendHandshake = () => {
     console.log('Sending handshake to server...')
 
-    socket.emit('handshake', (uid: string, users: string[]) => {
-      console.log('User handshake callback message recieved')
+    socket.emit('handshake', (users: string[], ownName: string) => {
+      console.log('User handshake callback message recieved', users, ownName)
 
-      SocketDispatch({ type: 'update_uid', payload: uid })
-      SocketDispatch({ type: 'update_users', payload: users })
+      SocketDispatch({ type: 'update_name', payload: ownName })
+      SocketDispatch({
+        type: 'update_users',
+        payload: users.filter((name) => name !== ownName),
+      })
 
       setLoading(false)
     })

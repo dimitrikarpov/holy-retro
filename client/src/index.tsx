@@ -7,11 +7,9 @@ import SocketContextComponent from './contexts/Socket/Component'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <React.StrictMode>
-    <SocketContextComponent>
-      <App />
-    </SocketContextComponent>
-  </React.StrictMode>
+  <SocketContextComponent>
+    <App />
+  </SocketContextComponent>
 )
 
 // If you want to start measuring performance in your app, pass a function

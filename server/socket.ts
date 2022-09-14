@@ -1,10 +1,10 @@
 import { Server as HTTPServer } from 'http'
 import { Socket, Server } from 'socket.io'
-import { v4 } from 'uuid'
+import { generateName } from './generateName'
 
-type TParticipant = {
-  uid: string
+type TUser = {
   sid: string
+  name: string
 }
 
 export class ServerSocket {
@@ -12,7 +12,7 @@ export class ServerSocket {
   public io: Server
 
   /** Master list of all connected users */
-  public participants: TParticipant[] = []
+  public users: TUser[] = []
 
   constructor(server: HTTPServer) {
     ServerSocket.instance = this
@@ -32,85 +32,36 @@ export class ServerSocket {
   }
 
   StartListeners = (socket: Socket) => {
+    const extractNameOnly = (user: TUser): string => user.name
+
     console.info('Message recieved from  ' + socket.id)
 
     socket.on(
       'handshake',
-      (callback: (uid: string, users: string[]) => void) => {
-        console.info('handshake recieved from ' + socket.id)
-
-        /** Check if this is a reconnection */
-        const reconnected = this.participants.some(
-          ({ sid }) => socket.id === sid
-        )
-
+      (callback: (users: string[], ownName: string) => void) => {
+        const reconnected = this.users.find(({ sid }) => socket.id === sid)
         if (reconnected) {
-          console.log('This user has reconnected')
+          callback(this.users.map(extractNameOnly), reconnected.name)
+        } else {
+          /** Generate a new user */
+          const newUser = { sid: socket.id, name: generateName() }
+          this.users.push(newUser)
 
-          const uid = this.getUserIdBySocketId(socket.id)
-          const users = this.participants.map(({ uid }) => uid)
+          callback(this.users.map(extractNameOnly), newUser.name)
 
-          if (uid) {
-            console.log('Sending callback to reconnect...')
-            callback(uid, users)
-
-            return
-          }
+          /** Send new user to all connected users */
+          socket.broadcast.emit('user_connected', newUser.name)
         }
-
-        /** Generate a new user */
-        const uid = v4()
-        this.participants.push({ uid, sid: socket.id })
-        const users = this.participants.map(({ uid }) => uid)
-
-        console.log('Sending callback for handshake...')
-        callback(uid, users)
-
-        /** Send new user to all connected users */
-        this.SendMessage(
-          'user_connected',
-          this.participants
-            .filter((p) => p.sid !== socket.id)
-            .map(({ sid }) => sid),
-          users
-        )
       }
     )
 
     socket.on('disconnect', () => {
       console.info('Disconnect recieved from ' + socket.id)
 
-      const uid = this.getUserIdBySocketId(socket.id)
+      const deletedName = this.users.find(({ sid }) => sid === socket.id)?.name
+      this.users = this.users.filter(({ sid }) => sid !== socket.id)
 
-      if (uid) {
-        this.participants = this.participants.filter((p) => p.uid !== uid)
-        const users = this.participants.map(({ uid }) => uid)
-
-        this.SendMessage(
-          'user_disconnected',
-          this.participants
-            .filter((p) => p.sid !== socket.id)
-            .map(({ sid }) => sid),
-          uid
-        )
-      }
+      socket.broadcast.emit('user_disconnected', deletedName)
     })
-  }
-
-  getUserIdBySocketId = (sid: string) => {
-    return this.participants.find((p) => p.sid === sid)?.uid
-  }
-
-  /**
-   * Send a message through the socket
-   * @param name The name of the event, ex: handshake
-   * @param users List of socket id's
-   * @param payload any information needed by the user for state updates
-   */
-  SendMessage = (name: string, users: string[], payload?: Object) => {
-    console.log('Emitting event: ' + name + ' to ', users)
-    users.forEach((id) =>
-      payload ? this.io.to(id).emit(name, payload) : this.io.to(id).emit(name)
-    )
   }
 }
