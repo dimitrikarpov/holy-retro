@@ -1,10 +1,15 @@
 import { PropsWithChildren, useEffect, useReducer, useState } from 'react'
+import Peer from 'simple-peer'
+import { Socket } from 'socket.io-client'
 import { useSocket } from '../../hooks/useSocket'
 import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
 } from './Context'
+
+let peers: Record<string, Peer.Instance> = {}
+let streams: MediaStream[] = []
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -56,6 +61,58 @@ const SocketContextComponent: React.FunctionComponent<
       SocketDispatch({ type: 'remove_user', payload: uid })
     })
 
+    socket.on('conn-prepare', (data) => {
+      const { connUserSocketId } = data
+
+      prepareNewPeerConnection(connUserSocketId, false, socket)
+
+      // const configuration = {
+      //   iceServers: [
+      //     {
+      //       urls: 'stun:stun.l.google.com:19302',
+      //     },
+      //   ],
+      // }
+
+      // peers[connUserSocketId] = new Peer({
+      //   initiator: false,
+      //   config: configuration,
+      //   // stream: localStream // emulator should be ready
+      // })
+
+      // peers[connUserSocketId].on('signal', (data) => {
+      //   const signalData = {
+      //     signal: data,
+      //     connUserSocketId: connUserSocketId,
+      //   }
+
+      //   socket.emit('conn-signal', signalData)
+      // })
+
+      // peers[connUserSocketId].on('stream', (stream) => {
+      //   streams.push(stream)
+
+      //   // addStream
+      //   // display incoming stream
+      // })
+
+      // inform the user which join the room that we have prepared for incoming connection
+      socket.emit('conn-init', { connUserSocketId })
+    })
+
+    socket.on('conn-signal', (data) => {
+      // add signaling data to peer connection
+      const { connUserSocketId } = data
+
+      peers[connUserSocketId].signal(data.signal)
+    })
+
+    socket.on('conn-init', (data) => {
+      const { connUserSocketId } = data
+
+      prepareNewPeerConnection(connUserSocketId, true, socket)
+    })
+
     /** Reconnect event */
     socket.io.on('reconnect', (attempt) => {
       console.log('Reconnecting on attempt' + attempt)
@@ -105,3 +162,45 @@ const SocketContextComponent: React.FunctionComponent<
 }
 
 export default SocketContextComponent
+
+const getConfiguration = () => {
+  return {
+    iceServers: [
+      {
+        urls: 'stun:stun.l.google.com:19302',
+      },
+    ],
+  }
+}
+
+export const prepareNewPeerConnection = (
+  connUserSocketId: string,
+  isInitiator: boolean,
+  socket: Socket
+) => {
+  const configuration = getConfiguration()
+
+  peers[connUserSocketId] = new Peer({
+    config: configuration,
+    initiator: isInitiator,
+    // stream: localStream,
+  })
+
+  peers[connUserSocketId].on('signal', (data) => {
+    /** webrtc offer, werbrtc answer (SDP informations), ice candidates */
+    const signalData = {
+      signal: data,
+      connUserSocketId: connUserSocketId,
+    }
+
+    // wss.signalPeerData(signalData)
+    socket.emit('conn-signal', signalData)
+  })
+
+  peers[connUserSocketId].on('stream', (stream) => {
+    console.log('new stream came')
+
+    // addStream(stream, connUserSocketId)
+    // streams = [...streams, stream]
+  })
+}

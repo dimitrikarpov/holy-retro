@@ -51,6 +51,13 @@ export class ServerSocket {
 
           /** Send new user to all connected users */
           socket.broadcast.emit('user_connected', newUser.name)
+
+          // TODO: move this to room connect logic
+          /** emit to all users (except owner) which are already in this room to prepare peer connection */
+          const data = {
+            connUserSocketId: socket.id, // maybe offer socket id of just socketId|sid
+          }
+          socket.broadcast.emit('conn-prepare', data) // signal-offer, signal-prepare
         }
       }
     )
@@ -62,6 +69,27 @@ export class ServerSocket {
       this.users = this.users.filter(({ sid }) => sid !== socket.id)
 
       socket.broadcast.emit('user_disconnected', deletedName)
+    })
+
+    socket.on('conn-signal', (data) => {
+      const { connUserSocketId, signal } = data
+
+      const signalingData = {
+        signal,
+        connUserSocketId: socket.id,
+      }
+
+      this.io.to(connUserSocketId).emit('conn-signal', signalingData)
+    })
+
+    socket.on('conn-init', (data) => {
+      const { connUserSocketId } = data
+
+      const initData = {
+        connUserSocketId: socket.id,
+      }
+
+      this.io.to(connUserSocketId).emit('conn-init', initData)
     })
   }
 }
