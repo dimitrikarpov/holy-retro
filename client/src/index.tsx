@@ -1,15 +1,38 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import SocketContextComponent from './contexts/Socket/Component'
 
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <div>users list</div>,
+  },
+  {
+    path: '/create',
+    element: <div>new game</div>,
+  },
+  {
+    path: '/manager',
+    element: <div>manager page</div>,
+  },
+  {
+    path: '/player',
+    element: <div>player page</div>,
+  },
+])
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <SocketContextComponent>
-    <App />
-  </SocketContextComponent>
+  <>
+    {/* <SocketContextComponent> */}
+    <RouterProvider router={router} />
+    {/* <App /> */}
+    {/* </SocketContextComponent> */}
+  </>
 )
 
 // If you want to start measuring performance in your app, pass a function
