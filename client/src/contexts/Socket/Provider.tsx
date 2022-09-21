@@ -1,10 +1,15 @@
-import { PropsWithChildren, useEffect, useReducer, useState } from 'react'
+import {
+  FunctionComponent,
+  PropsWithChildren,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
 import Peer from 'simple-peer'
 import { Socket } from 'socket.io-client'
 import { useSocket } from '../../hooks/useSocket'
-import {
+import SocketContext, {
   defaultSocketContextState,
-  SocketContextProvider,
   SocketReducer,
   TUser,
 } from './Context'
@@ -12,13 +17,11 @@ import {
 let peers: Record<string, Peer.Instance> = {}
 let streams: MediaStream[] = []
 
-export interface ISocketContextComponentProps extends PropsWithChildren {}
+interface ISocketContextComponentProps extends PropsWithChildren {}
 
-const SocketContextComponent: React.FunctionComponent<
-  ISocketContextComponentProps
-> = (props) => {
-  const { children } = props
-
+const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
+  children,
+}) => {
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
     defaultSocketContextState
@@ -36,7 +39,7 @@ const SocketContextComponent: React.FunctionComponent<
     socket.connect()
 
     /** Save socket inside context */
-    SocketDispatch({ type: 'update_socket', payload: socket })
+    SocketDispatch({ type: 'socket:set', payload: socket })
 
     /** Start event listeners */
     StartListeners()
@@ -48,18 +51,16 @@ const SocketContextComponent: React.FunctionComponent<
   }, [])
 
   const StartListeners = () => {
-    /** User connected event */
-    socket.on('user_connected', (user: string) => {
+    socket.on('user_connected', (user: TUser) => {
       console.info('User connected')
 
-      SocketDispatch({ type: 'add_user', payload: user })
+      SocketDispatch({ type: 'users:add', payload: user })
     })
 
-    /** User disconnected event */
     socket.on('user_disconnected', (uid: string) => {
       console.info('User disconnected, user id recieved', uid)
 
-      SocketDispatch({ type: 'remove_user', payload: uid })
+      SocketDispatch({ type: 'users:remove', payload: uid })
     })
 
     socket.on('conn-prepare', (data) => {
@@ -144,7 +145,7 @@ const SocketContextComponent: React.FunctionComponent<
       console.log('User handshake callback message recieved', users)
 
       SocketDispatch({
-        type: 'update_users',
+        type: 'users:update',
         payload: users,
       })
 
@@ -155,13 +156,13 @@ const SocketContextComponent: React.FunctionComponent<
   if (loading) return <p>loading socket.io ...</p>
 
   return (
-    <SocketContextProvider value={{ SocketState, SocketDispatch }}>
+    <SocketContext.Provider value={{ SocketState, SocketDispatch }}>
       {children}
-    </SocketContextProvider>
+    </SocketContext.Provider>
   )
 }
 
-export default SocketContextComponent
+export default SocketProvider
 
 const getConfiguration = () => {
   return {

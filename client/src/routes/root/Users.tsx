@@ -10,10 +10,13 @@ export const Users: React.FunctionComponent<IUsersProps> = () => {
   const otherUsersExceptMe = users.filter(({ sid }) => sid !== socket!.id)
 
   return (
-    <ul>
-      {otherUsersExceptMe.map(({ name, sid }) => (
-        <UserItem name={name} sid={sid} />
-      ))}
-    </ul>
+    <>
+      <h4>users online</h4>
+      <ul>
+        {otherUsersExceptMe.map(({ name, sid }) => (
+          <UserItem name={name} sid={sid} />
+        ))}
+      </ul>
+    </>
   )
 }

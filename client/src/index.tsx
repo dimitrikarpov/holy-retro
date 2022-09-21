@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import SocketContextComponent from 'contexts/Socket/Component'
+import SocketProvider from 'contexts/Socket/Provider'
 import { SocketInfo } from './routes/root/SocketInfo'
+import { Users } from 'routes/root/Users'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>users list</div>,
+    element: <Users />,
   },
   {
     path: '/create',
@@ -28,10 +29,10 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <>
-    <SocketContextComponent>
+    <SocketProvider>
       <RouterProvider router={router} />
       <SocketInfo />
-    </SocketContextComponent>
+    </SocketProvider>
   </>
 )
 
