@@ -1,9 +1,9 @@
 import { useContext } from 'react'
 import SocketContext from './contexts/Socket/Context'
 
-export interface IApplicationProps {}
+export interface ISocketInfoProps {}
 
-const App: React.FunctionComponent<IApplicationProps> = () => {
+export const SocketInfo: React.FunctionComponent<ISocketInfoProps> = () => {
   const { socket, users, name } = useContext(SocketContext).SocketState
 
   return (
@@ -18,9 +18,6 @@ const App: React.FunctionComponent<IApplicationProps> = () => {
       <p>
         My Name: <strong>{name}</strong>
       </p>
-      <p>Users: {JSON.stringify(users)}</p>
     </div>
   )
 }
-
-export default App

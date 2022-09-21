@@ -57,7 +57,8 @@ export class ServerSocket {
           const data = {
             connUserSocketId: socket.id, // maybe offer socket id of just socketId|sid
           }
-          socket.broadcast.emit('conn-prepare', data) // signal-offer, signal-prepare
+
+          // socket.broadcast.emit('conn-prepare', data) // signal-offer, signal-prepare
         }
       }
     )

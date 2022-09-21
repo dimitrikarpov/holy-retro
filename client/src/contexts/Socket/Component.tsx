@@ -30,21 +30,21 @@ const SocketContextComponent: React.FunctionComponent<
     autoConnect: false,
   })
 
-  // useEffect(() => {
-  //   /** Connect to the Web Socket */
-  //   socket.connect()
+  useEffect(() => {
+    /** Connect to the Web Socket */
+    socket.connect()
 
-  //   /** Save socket inside context */
-  //   SocketDispatch({ type: 'update_socket', payload: socket })
+    /** Save socket inside context */
+    SocketDispatch({ type: 'update_socket', payload: socket })
 
-  //   /** Start event listeners */
-  //   StartListeners()
+    /** Start event listeners */
+    StartListeners()
 
-  //   /** Send the handshake */
-  //   SendHandshake()
+    /** Send the handshake */
+    SendHandshake()
 
-  //   // eslint-disable-next-line
-  // }, [])
+    // eslint-disable-next-line
+  }, [])
 
   const StartListeners = () => {
     /** User connected event */
@@ -64,7 +64,7 @@ const SocketContextComponent: React.FunctionComponent<
     socket.on('conn-prepare', (data) => {
       const { connUserSocketId } = data
 
-      prepareNewPeerConnection(connUserSocketId, false, socket)
+      prepareNewPeerConnection(connUserSocketId, false, socket) // disable for a while
 
       // const configuration = {
       //   iceServers: [
@@ -110,7 +110,7 @@ const SocketContextComponent: React.FunctionComponent<
     socket.on('conn-init', (data) => {
       const { connUserSocketId } = data
 
-      prepareNewPeerConnection(connUserSocketId, true, socket)
+      prepareNewPeerConnection(connUserSocketId, true, socket) // temporaly disabled
     })
 
     /** Reconnect event */

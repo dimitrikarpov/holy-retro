@@ -2,9 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom'
 import './index.css'
-import App from './App'
 import reportWebVitals from './reportWebVitals'
-import SocketContextComponent from './contexts/Socket/Component'
+import SocketContextComponent from 'contexts/Socket/Component'
+import { SocketInfo } from './SocketInfo'
 
 const router = createBrowserRouter([
   {
@@ -30,7 +30,7 @@ root.render(
   <>
     {/* <SocketContextComponent> */}
     <RouterProvider router={router} />
-    {/* <App /> */}
+    <SocketInfo />
     {/* </SocketContextComponent> */}
   </>
 )
