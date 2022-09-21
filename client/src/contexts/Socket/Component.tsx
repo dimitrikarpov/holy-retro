@@ -6,6 +6,7 @@ import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
+  TUser,
 } from './Context'
 
 let peers: Record<string, Peer.Instance> = {}
@@ -139,13 +140,12 @@ const SocketContextComponent: React.FunctionComponent<
   const SendHandshake = () => {
     console.log('Sending handshake to server...')
 
-    socket.emit('handshake', (users: string[], ownName: string) => {
-      console.log('User handshake callback message recieved', users, ownName)
+    socket.emit('handshake', (users: TUser[]) => {
+      console.log('User handshake callback message recieved', users)
 
-      SocketDispatch({ type: 'update_name', payload: ownName })
       SocketDispatch({
         type: 'update_users',
-        payload: users.filter((name) => name !== ownName),
+        payload: users,
       })
 
       setLoading(false)

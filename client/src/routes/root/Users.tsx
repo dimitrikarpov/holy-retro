@@ -5,12 +5,14 @@ import { UserItem } from './UserItem'
 export interface IUsersProps {}
 
 export const Users: React.FunctionComponent<IUsersProps> = () => {
-  const { users } = useContext(SocketContext).SocketState
+  const { users, socket } = useContext(SocketContext).SocketState
+
+  const otherUsersExceptMe = users.filter(({ sid }) => sid !== socket!.id)
 
   return (
     <ul>
-      {users.map((user) => (
-        <UserItem name={user} />
+      {otherUsersExceptMe.map(({ name, sid }) => (
+        <UserItem name={name} sid={sid} />
       ))}
     </ul>
   )

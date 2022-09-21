@@ -1,26 +1,28 @@
 import React, { createContext } from 'react'
 import { Socket } from 'socket.io-client'
 
+export type TUser = {
+  sid: string
+  name: string
+}
+
 export interface ISocketContextState {
   socket: Socket | undefined
-  name: string
-  users: string[]
+  users: TUser[]
 }
 
 export const defaultSocketContextState: ISocketContextState = {
   socket: undefined,
-  name: '',
   users: [],
 }
 
 export type TSocketContextActions =
-  | 'update_socket'
-  | 'update_name'
-  | 'update_users'
-  | 'add_user'
-  | 'remove_user'
+  | 'update_socket' // socket:set
+  | 'update_users' // users:update
+  | 'add_user' // users:add
+  | 'remove_user' // users: remove
 
-export type TSocketContextPayload = string | string[] | Socket
+export type TSocketContextPayload = string | TUser | TUser[] | Socket
 
 export interface ISocketContextActions {
   type: TSocketContextActions
@@ -39,20 +41,19 @@ export const SocketReducer = (
     case 'update_socket':
       return { ...state, socket: action.payload as Socket }
 
-    case 'update_name':
-      return { ...state, name: action.payload as string }
-
     case 'update_users':
-      return { ...state, users: action.payload as string[] }
+      return { ...state, users: action.payload as TUser[] }
 
     case 'add_user': {
-      return { ...state, users: [...state.users, action.payload as string] }
+      return { ...state, users: [...state.users, action.payload as TUser] }
     }
 
     case 'remove_user':
       return {
         ...state,
-        users: state.users.filter((uid) => uid !== (action.payload as string)),
+        users: state.users.filter(
+          ({ sid }) => sid !== (action.payload as string)
+        ),
       }
 
     default:

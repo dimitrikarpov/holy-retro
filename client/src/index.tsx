@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
 import SocketContextComponent from 'contexts/Socket/Component'
-import { SocketInfo } from './SocketInfo'
+import { SocketInfo } from './routes/root/SocketInfo'
 
 const router = createBrowserRouter([
   {
@@ -28,10 +28,10 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <>
-    {/* <SocketContextComponent> */}
-    <RouterProvider router={router} />
-    <SocketInfo />
-    {/* </SocketContextComponent> */}
+    <SocketContextComponent>
+      <RouterProvider router={router} />
+      <SocketInfo />
+    </SocketContextComponent>
   </>
 )
 

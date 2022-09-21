@@ -32,44 +32,38 @@ export class ServerSocket {
   }
 
   StartListeners = (socket: Socket) => {
-    const extractNameOnly = (user: TUser): string => user.name
-
     console.info('Message recieved from  ' + socket.id)
 
-    socket.on(
-      'handshake',
-      (callback: (users: string[], ownName: string) => void) => {
-        const reconnected = this.users.find(({ sid }) => socket.id === sid)
-        if (reconnected) {
-          callback(this.users.map(extractNameOnly), reconnected.name)
-        } else {
-          /** Generate a new user */
-          const newUser = { sid: socket.id, name: generateName() }
-          this.users.push(newUser)
+    socket.on('handshake', (callback: (users: TUser[]) => void) => {
+      const reconnected = this.users.find(({ sid }) => socket.id === sid)
 
-          callback(this.users.map(extractNameOnly), newUser.name)
+      if (!reconnected) {
+        /** Generate a new user */
+        const newUser = { sid: socket.id, name: generateName() }
+        this.users.push(newUser)
 
-          /** Send new user to all connected users */
-          socket.broadcast.emit('user_connected', newUser.name)
-
-          // TODO: move this to room connect logic
-          /** emit to all users (except owner) which are already in this room to prepare peer connection */
-          const data = {
-            connUserSocketId: socket.id, // maybe offer socket id of just socketId|sid
-          }
-
-          // socket.broadcast.emit('conn-prepare', data) // signal-offer, signal-prepare
-        }
+        /** Send new user to all connected users */
+        socket.broadcast.emit('user_connected', newUser)
       }
-    )
+
+      callback(this.users)
+
+      /*
+        // TODO: move this to room connect logic
+        */
+      /** emit to all users (except owner) which are already in this room to prepare peer connection */
+      // const data = {
+      //   connUserSocketId: socket.id, // maybe offer socket id of just socketId|sid
+      // }
+      // socket.broadcast.emit('conn-prepare', data) // signal-offer, signal-prepare
+    })
 
     socket.on('disconnect', () => {
       console.info('Disconnect recieved from ' + socket.id)
 
-      const deletedName = this.users.find(({ sid }) => sid === socket.id)?.name
       this.users = this.users.filter(({ sid }) => sid !== socket.id)
 
-      socket.broadcast.emit('user_disconnected', deletedName)
+      socket.broadcast.emit('user_disconnected', socket.id)
     })
 
     socket.on('conn-signal', (data) => {
