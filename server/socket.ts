@@ -66,6 +66,36 @@ export class ServerSocket {
       socket.broadcast.emit('user_disconnected', socket.id)
     })
 
+    // ************************************************************** //
+
+    socket.on('peer:prepare-player', ({ playerSocketId }) => {
+      console.log('ON PLAYER PREPARE', playerSocketId)
+
+      // socket.id - manager socket
+
+      this.io
+        .to(playerSocketId)
+        .emit('peer:prepare-player', { managerSocketId: socket.id })
+    })
+
+    socket.on('peer:prepare-manager', ({ managerSocketId }) => {
+      console.log('ON MANAGER PREPARE', managerSocketId)
+
+      // socket.id - player socket
+
+      this.io
+        .to(managerSocketId)
+        .emit('peer:prepare-manager', { playerSocketId: socket.id })
+    })
+
+    socket.on('peer:signal-player', ({ data, sid }) => {
+      console.log('ON SIGNAL PLAYER', sid)
+
+      this.io.to(sid).emit('peer:signal-player', data)
+    })
+
+    // ************************************************************** //
+
     socket.on('conn-signal', (data) => {
       const { connUserSocketId, signal } = data
 
@@ -88,3 +118,7 @@ export class ServerSocket {
     })
   }
 }
+
+// peer:player-prepare
+// peer:manager-prepare
+// peer:signal-player

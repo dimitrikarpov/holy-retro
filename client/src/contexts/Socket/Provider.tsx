@@ -17,6 +17,9 @@ import SocketContext, {
 let peers: Record<string, Peer.Instance> = {}
 let streams: MediaStream[] = []
 
+let peer: Peer.Instance
+let stream: MediaStream
+
 interface ISocketContextComponentProps extends PropsWithChildren {}
 
 const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
@@ -62,6 +65,46 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
       SocketDispatch({ type: 'users:remove', payload: uid })
     })
+
+    // ************************************************************** //
+
+    socket.on('peer:prepare-player', ({ managerSocketId }) => {
+      console.log('on PLAYER PREPARE', managerSocketId)
+
+      const configuration = getConfiguration()
+
+      peer = new Peer({
+        config: configuration,
+        initiator: false,
+      })
+
+      SocketDispatch({ type: 'role:set', payload: 'player' })
+
+      socket.emit('peer:prepare-manager', { managerSocketId })
+    })
+
+    socket.on('peer:prepare-manager', ({ playerSocketId }) => {
+      console.log('on MANAGER PREPARE', playerSocketId)
+
+      const configuration = getConfiguration()
+
+      peer = new Peer({
+        config: configuration,
+        initiator: true,
+      })
+
+      peer.on('signal', (data) => {
+        socket.emit('peer:signal-player', { data, sid: playerSocketId })
+      })
+
+      SocketDispatch({ type: 'role:set', payload: 'manager' })
+    })
+
+    socket.on('peer:signal-player', (data: Peer.SignalData) => {
+      peer.signal(data)
+    })
+
+    // ************************************************************** //
 
     socket.on('conn-prepare', (data) => {
       const { connUserSocketId } = data
@@ -203,5 +246,26 @@ export const prepareNewPeerConnection = (
 
     // addStream(stream, connUserSocketId)
     // streams = [...streams, stream]
+  })
+}
+
+export const preparePeerConnection = (
+  sid: string,
+  isInitiator: boolean,
+  socket: Socket
+) => {
+  const configuration = getConfiguration()
+
+  peer = new Peer({
+    config: configuration,
+    initiator: true,
+  })
+
+  console.log('PEER', peer)
+
+  peer.on('signal', (data) => {
+    //
+
+    console.log('SIGNAL DATA', data)
   })
 }

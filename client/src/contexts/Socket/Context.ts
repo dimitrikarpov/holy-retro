@@ -6,14 +6,18 @@ export type TUser = {
   name: string
 }
 
+type TRole = 'none' | 'manager' | 'player'
+
 interface ISocketContextState {
   socket: Socket | undefined
   users: TUser[]
+  role: TRole
 }
 
 export const defaultSocketContextState: ISocketContextState = {
   socket: undefined,
   users: [],
+  role: 'none',
 }
 
 type TSocketContextAction =
@@ -33,6 +37,10 @@ type TSocketContextAction =
       type: 'users:remove'
       payload: string
     }
+  | {
+      type: 'role:set'
+      payload: TRole
+    }
 
 export const SocketReducer = (
   state: ISocketContextState,
@@ -44,21 +52,22 @@ export const SocketReducer = (
 
   switch (action.type) {
     case 'socket:set':
-      return { ...state, socket: action.payload as Socket }
+      return { ...state, socket: action.payload }
 
     case 'users:update':
-      return { ...state, users: action.payload as TUser[] }
+      return { ...state, users: action.payload }
 
     case 'users:add':
-      return { ...state, users: [...state.users, action.payload as TUser] }
+      return { ...state, users: [...state.users, action.payload] }
 
     case 'users:remove':
       return {
         ...state,
-        users: state.users.filter(
-          ({ sid }) => sid !== (action.payload as string)
-        ),
+        users: state.users.filter(({ sid }) => sid !== action.payload),
       }
+
+    case 'role:set':
+      return { ...state, role: action.payload }
 
     default:
       return { ...state }

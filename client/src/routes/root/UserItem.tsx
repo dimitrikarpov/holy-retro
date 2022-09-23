@@ -1,18 +1,18 @@
-import { useContext } from 'react'
+import { FunctionComponent, useContext } from 'react'
 import SocketContext from 'contexts/Socket/Context'
+
 interface IUserItemProps {
   name: string
   sid: string
 }
 
-export const UserItem: React.FunctionComponent<IUserItemProps> = ({
-  name,
-  sid,
-}) => {
-  const { socket } = useContext(SocketContext).SocketState
+export const UserItem: FunctionComponent<IUserItemProps> = ({ name, sid }) => {
+  const {
+    SocketState: { socket },
+  } = useContext(SocketContext)
 
   const onClick = () => {
-    socket?.emit('peer_init', { sid })
+    socket?.emit('peer:prepare-player', { playerSocketId: sid })
   }
 
   return (
