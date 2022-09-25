@@ -1,38 +1,27 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
 import SocketProvider from 'contexts/Socket/Provider'
 import { SocketInfo } from './routes/root/SocketInfo'
 import { Users } from 'routes/root/Users'
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Users />,
-  },
-  {
-    path: '/create',
-    element: <div>new game</div>,
-  },
-  {
-    path: '/manager',
-    element: <div>manager page</div>,
-  },
-  {
-    path: '/player',
-    element: <div>player page</div>,
-  },
-])
+import { CreateGame } from 'routes/create/CreateGame'
+import { Player } from 'routes/player/Player'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <>
-    <SocketProvider>
-      <RouterProvider router={router} />
-      <SocketInfo />
-    </SocketProvider>
+    <BrowserRouter>
+      <SocketProvider>
+        <Routes>
+          <Route path="/" element={<Users />}></Route>
+          <Route path="/create" element={<CreateGame />}></Route>
+          <Route path="/player" element={<Player />}></Route>
+        </Routes>
+        <SocketInfo />
+      </SocketProvider>
+    </BrowserRouter>
   </>
 )
 

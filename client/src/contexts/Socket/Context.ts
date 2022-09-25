@@ -1,5 +1,6 @@
 import { createContext, Dispatch } from 'react'
 import { Socket } from 'socket.io-client'
+import Peer from 'simple-peer'
 
 export type TUser = {
   sid: string
@@ -10,12 +11,14 @@ type TRole = 'none' | 'manager' | 'player'
 
 interface ISocketContextState {
   socket: Socket | undefined
+  peer: Peer.Instance | undefined
   users: TUser[]
   role: TRole
 }
 
 export const defaultSocketContextState: ISocketContextState = {
   socket: undefined,
+  peer: undefined,
   users: [],
   role: 'none',
 }
@@ -24,6 +27,10 @@ type TSocketContextAction =
   | {
       type: 'socket:set'
       payload: Socket
+    }
+  | {
+      type: 'peer:set'
+      payload: Peer.Instance
     }
   | {
       type: 'users:update'
@@ -53,6 +60,9 @@ export const SocketReducer = (
   switch (action.type) {
     case 'socket:set':
       return { ...state, socket: action.payload }
+
+    case 'peer:set':
+      return { ...state, peer: action.payload }
 
     case 'users:update':
       return { ...state, users: action.payload }

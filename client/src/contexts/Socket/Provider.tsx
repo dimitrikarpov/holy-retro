@@ -5,6 +5,7 @@ import {
   useReducer,
   useState,
 } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Peer from 'simple-peer'
 import { Socket } from 'socket.io-client'
 import { useSocket } from '../../hooks/useSocket'
@@ -25,10 +26,13 @@ interface ISocketContextComponentProps extends PropsWithChildren {}
 const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
   children,
 }) => {
+  const navigate = useNavigate()
+
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
     defaultSocketContextState
   )
+
   const [loading, setLoading] = useState(true)
 
   const socket = useSocket('ws://localhost:1337', {
@@ -78,9 +82,15 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
         initiator: false,
       })
 
-      SocketDispatch({ type: 'role:set', payload: 'player' })
+      peer.on('connect', () => {
+        console.log('')
+      })
 
       socket.emit('peer:prepare-manager', { managerSocketId })
+
+      SocketDispatch({ type: 'role:set', payload: 'player' })
+
+      navigate('/player')
     })
 
     socket.on('peer:prepare-manager', ({ playerSocketId }) => {
@@ -98,6 +108,8 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
       })
 
       SocketDispatch({ type: 'role:set', payload: 'manager' })
+
+      navigate('/create')
     })
 
     socket.on('peer:signal-player', (data: Peer.SignalData) => {
