@@ -12,7 +12,8 @@ export const UserItem: FunctionComponent<IUserItemProps> = ({ name, sid }) => {
   } = useContext(SocketContext)
 
   const onClick = () => {
-    socket?.emit('peer:prepare-player', { playerSocketId: sid })
+    // socket?.emit('peer:prepare-player', { playerSocketId: sid })
+    socket?.emit('peer:prepare')
   }
 
   return (

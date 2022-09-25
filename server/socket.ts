@@ -68,6 +68,29 @@ export class ServerSocket {
 
     // ************************************************************** //
 
+    // peer:prepare = peer:handshake
+    // peer:init = peer:init
+    // peer:signal
+
+    socket.on('peer:prepare', () => {
+      console.log('got PREPARE message', socket.id)
+
+      socket.broadcast.emit('peer:prepare', { sid: socket.id })
+    })
+
+    socket.on('peer:init', ({ sid }) => {
+      console.log('got INIT message')
+
+      this.io.to(sid).emit('peer:init', { sid: socket.id })
+    })
+
+    socket.on('peer:signal', ({ data, sid }) => {
+      console.log('got SIGNAL message', sid)
+
+      this.io.to(sid).emit('peer:signal', { data, sid: socket.id })
+    })
+    // ************************************************************** //
+
     socket.on('peer:prepare-player', ({ playerSocketId }) => {
       console.log('ON PLAYER PREPARE', playerSocketId)
 

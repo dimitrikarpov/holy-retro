@@ -8,17 +8,18 @@ export type TUser = {
 }
 
 type TRole = 'none' | 'manager' | 'player'
+type TPeers = Record<string, Peer.Instance>
 
 interface ISocketContextState {
   socket: Socket | undefined
-  peer: Peer.Instance | undefined
+  peers: TPeers | undefined
   users: TUser[]
   role: TRole
 }
 
 export const defaultSocketContextState: ISocketContextState = {
   socket: undefined,
-  peer: undefined,
+  peers: undefined,
   users: [],
   role: 'none',
 }
@@ -29,8 +30,8 @@ type TSocketContextAction =
       payload: Socket
     }
   | {
-      type: 'peer:set'
-      payload: Peer.Instance
+      type: 'peers:set'
+      payload: TPeers
     }
   | {
       type: 'users:update'
@@ -53,16 +54,16 @@ export const SocketReducer = (
   state: ISocketContextState,
   action: TSocketContextAction
 ) => {
-  console.log(
-    `Message recieved - Action: [${action.type}] - Payload: [${action.payload}]`
-  )
+  // console.log(
+  //   `Message recieved - Action: [${action.type}] - Payload: [${action.payload}]`
+  // )
 
   switch (action.type) {
     case 'socket:set':
       return { ...state, socket: action.payload }
 
-    case 'peer:set':
-      return { ...state, peer: action.payload }
+    case 'peers:set':
+      return { ...state, peers: action.payload }
 
     case 'users:update':
       return { ...state, users: action.payload }

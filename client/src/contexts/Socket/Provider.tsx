@@ -72,6 +72,28 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
     // ************************************************************** //
 
+    socket.on('peer:prepare', ({ sid }) => {
+      console.log('[peer:prepare]')
+
+      addPeer(sid, false, socket)
+
+      socket.emit('peer:init', { sid })
+    })
+
+    socket.on('peer:init', ({ sid }) => {
+      console.log('[peer:init]')
+
+      addPeer(sid, true, socket)
+    })
+
+    socket.on('peer:signal', ({ data, sid }) => {
+      console.log('[peer:signal]')
+
+      peers[sid].signal(data)
+    })
+
+    // ************************************************************** //
+
     socket.on('peer:prepare-player', ({ managerSocketId }) => {
       console.log('on PLAYER PREPARE', managerSocketId)
 
@@ -194,10 +216,10 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
   }
 
   const SendHandshake = () => {
-    console.log('Sending handshake to server...')
+    // console.log('Sending handshake to server...')
 
     socket.emit('handshake', (users: TUser[]) => {
-      console.log('User handshake callback message recieved', users)
+      // console.log('User handshake callback message recieved', users)
 
       SocketDispatch({
         type: 'users:update',
@@ -227,6 +249,21 @@ const getConfiguration = () => {
       },
     ],
   }
+}
+
+const addPeer = (sid: string, initiator: boolean, socket: Socket) => {
+  const configuration = getConfiguration()
+
+  peers[sid] = new Peer({
+    config: configuration,
+    initiator,
+  })
+
+  peers[sid].on('signal', (data) => {
+    socket.emit('peer:signal', { data, sid })
+  })
+
+  console.log({ peers })
 }
 
 export const prepareNewPeerConnection = (
