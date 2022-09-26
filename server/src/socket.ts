@@ -47,15 +47,6 @@ export class ServerSocket {
       }
 
       callback(this.users)
-
-      /*
-        // TODO: move this to room connect logic
-        */
-      /** emit to all users (except owner) which are already in this room to prepare peer connection */
-      // const data = {
-      //   connUserSocketId: socket.id, // maybe offer socket id of just socketId|sid
-      // }
-      // socket.broadcast.emit('conn-prepare', data) // signal-offer, signal-prepare
     })
 
     socket.on('disconnect', () => {
@@ -65,12 +56,6 @@ export class ServerSocket {
 
       socket.broadcast.emit('user_disconnected', socket.id)
     })
-
-    // ************************************************************** //
-
-    // peer:prepare = peer:handshake
-    // peer:init = peer:init
-    // peer:signal
 
     socket.on('peer:prepare', () => {
       console.log('got PREPARE message', socket.id)
@@ -89,59 +74,5 @@ export class ServerSocket {
 
       this.io.to(sid).emit('peer:signal', { data, sid: socket.id })
     })
-    // ************************************************************** //
-
-    socket.on('peer:prepare-player', ({ playerSocketId }) => {
-      console.log('ON PLAYER PREPARE', playerSocketId)
-
-      // socket.id - manager socket
-
-      this.io
-        .to(playerSocketId)
-        .emit('peer:prepare-player', { managerSocketId: socket.id })
-    })
-
-    socket.on('peer:prepare-manager', ({ managerSocketId }) => {
-      console.log('ON MANAGER PREPARE', managerSocketId)
-
-      // socket.id - player socket
-
-      this.io
-        .to(managerSocketId)
-        .emit('peer:prepare-manager', { playerSocketId: socket.id })
-    })
-
-    socket.on('peer:signal-player', ({ data, sid }) => {
-      console.log('ON SIGNAL PLAYER', sid)
-
-      this.io.to(sid).emit('peer:signal-player', data)
-    })
-
-    // ************************************************************** //
-
-    socket.on('conn-signal', (data) => {
-      const { connUserSocketId, signal } = data
-
-      const signalingData = {
-        signal,
-        connUserSocketId: socket.id,
-      }
-
-      this.io.to(connUserSocketId).emit('conn-signal', signalingData)
-    })
-
-    socket.on('conn-init', (data) => {
-      const { connUserSocketId } = data
-
-      const initData = {
-        connUserSocketId: socket.id,
-      }
-
-      this.io.to(connUserSocketId).emit('conn-init', initData)
-    })
   }
 }
-
-// peer:player-prepare
-// peer:manager-prepare
-// peer:signal-player
