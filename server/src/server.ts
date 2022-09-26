@@ -1,68 +1,43 @@
 import http from 'http'
+import { Server, Socket } from 'socket.io'
 import express from 'express'
 import dotenv from 'dotenv'
-import { ServerSocket } from './socket'
+import cors from 'cors'
+// import { ServerSocket } from './socket'
+import userHanlder from './handlers/userHanlder'
+import peerHandler from './handlers/peerHandler'
 
 dotenv.config()
 
 const application = express()
+application.use(cors)
 
-/** Server Handling */
 const httpServer = http.createServer(application)
 
-/** Start the socket */
-new ServerSocket(httpServer)
-
-/** Log the request */
-application.use((req, res, next) => {
-  console.info(
-    `METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`
-  )
-
-  res.on('finish', () => {
-    console.info(
-      `METHOD: [${req.method}] - URL: [${req.url}] - STATUS: [${res.statusCode}] - IP: [${req.socket.remoteAddress}]`
-    )
-  })
-
-  next()
+const io = new Server(httpServer, {
+  serveClient: false,
+  pingInterval: 10000,
+  pingTimeout: 5000,
+  cookie: false,
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
 })
 
-/** Parse the body of the request */
-application.use(express.urlencoded({ extended: true }))
-application.use(express.json())
+const { handshake, disconnect } = userHanlder(io)
+const { peerPrepare, peerInit, peerSignal } = peerHandler(io)
 
-/** Rules of our API */
-application.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  )
+const onConnection = (socket: Socket) => {
+  socket.on('handshake', handshake)
+  socket.on('disconnect', disconnect)
+  socket.on('peer:prepare', peerPrepare)
+  socket.on('peer:init', peerInit)
+  socket.on('peer:signal', peerSignal)
+}
 
-  if (req.method == 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET')
-    return res.status(200).json({})
-  }
+io.on('connection', onConnection)
 
-  next()
-})
-
-/** Healthcheck */
-application.get('/ping', (req, res, next) => {
-  return res.status(200).json({ hello: 'world!' })
-})
-
-/** Error handling */
-application.use((req, res, next) => {
-  const error = new Error('Not found')
-
-  res.status(404).json({
-    message: error.message,
-  })
-})
-
-/** Listen */
 httpServer.listen(process.env.PORT || 1337, () =>
   console.info(`Server is running`)
 )

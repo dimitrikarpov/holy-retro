@@ -1,6 +1,6 @@
 import { Server as HTTPServer } from 'http'
 import { Socket, Server } from 'socket.io'
-import { generateName } from './generateName'
+import { generateName } from './utils/generateName'
 
 type TUser = {
   sid: string
