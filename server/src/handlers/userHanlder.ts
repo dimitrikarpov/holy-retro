@@ -5,13 +5,8 @@ import { generateName } from '../utils/generateName'
 /** Master list of all connected users */
 let users: TUser[] = []
 
-export default function (io: Server) {
-  const handshake = function (
-    this: Socket,
-    callback: (users: TUser[]) => void
-  ) {
-    const socket = this
-
+export default function (io: Server, socket: Socket) {
+  const handshake = (callback: (users: TUser[]) => void) => {
     const reconnected = users.find(({ sid }) => socket.id === sid)
 
     if (!reconnected) {
@@ -26,9 +21,7 @@ export default function (io: Server) {
     callback(users)
   }
 
-  const disconnect = function (this: Socket) {
-    const socket = this
-
+  const disconnect = () => {
     console.info('Disconnect recieved from ' + socket.id)
 
     users = users.filter(({ sid }) => sid !== socket.id)
@@ -36,5 +29,6 @@ export default function (io: Server) {
     socket.broadcast.emit('user_disconnected', socket.id)
   }
 
-  return { handshake, disconnect }
+  socket.on('handshake', handshake)
+  socket.on('disconnect', disconnect)
 }
