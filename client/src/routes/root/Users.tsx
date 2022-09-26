@@ -14,7 +14,7 @@ export const Users: React.FunctionComponent<IUsersProps> = () => {
       <h4>users online</h4>
       <ul>
         {otherUsersExceptMe.map(({ name, sid }) => (
-          <UserItem name={name} sid={sid} />
+          <UserItem name={name} sid={sid} key={sid} />
         ))}
       </ul>
     </>

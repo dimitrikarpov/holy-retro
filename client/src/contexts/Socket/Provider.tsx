@@ -254,13 +254,23 @@ const getConfiguration = () => {
 const addPeer = (sid: string, initiator: boolean, socket: Socket) => {
   const configuration = getConfiguration()
 
-  peers[sid] = new Peer({
+  const SimplePeerGlobal = window.SimplePeer
+
+  peers[sid] = new SimplePeerGlobal({
     config: configuration,
     initiator,
   })
 
   peers[sid].on('signal', (data) => {
     socket.emit('peer:signal', { data, sid })
+  })
+
+  peers[sid].on('connect', () => {
+    console.log('connected with', sid)
+  })
+
+  peers[sid].on('data', (chunk) => {
+    console.log('DATA:', chunk)
   })
 
   console.log({ peers })
@@ -308,6 +318,7 @@ export const preparePeerConnection = (
   peer = new Peer({
     config: configuration,
     initiator: true,
+    stream: undefined,
   })
 
   console.log('PEER', peer)
