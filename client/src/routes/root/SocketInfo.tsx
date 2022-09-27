@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import SocketContext from 'contexts/Socket/Context'
 
-export interface ISocketInfoProps {}
+interface ISocketInfoProps {}
 
 export const SocketInfo: React.FunctionComponent<ISocketInfoProps> = () => {
   const { socket, users } = useContext(SocketContext).SocketState

@@ -54,10 +54,6 @@ export const SocketReducer = (
   state: ISocketContextState,
   action: TSocketContextAction
 ) => {
-  // console.log(
-  //   `Message recieved - Action: [${action.type}] - Payload: [${action.payload}]`
-  // )
-
   switch (action.type) {
     case 'socket:set':
       return { ...state, socket: action.payload }
