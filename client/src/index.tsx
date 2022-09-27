@@ -3,23 +3,26 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import SocketProvider from 'contexts/Socket/Provider'
+import SocketProvider from 'contexts/socket/SocketProvider'
 import { SocketInfo } from './routes/root/SocketInfo'
 import { Users } from 'routes/root/Users'
 import { CreateGame } from 'routes/create/CreateGame'
 import { Player } from 'routes/player/Player'
+import { RoleProvider } from 'contexts/role/RoleProvider'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <>
     <BrowserRouter>
       <SocketProvider>
-        <Routes>
-          <Route path="/" element={<Users />}></Route>
-          <Route path="/create" element={<CreateGame />}></Route>
-          <Route path="/player" element={<Player />}></Route>
-        </Routes>
-        <SocketInfo />
+        <RoleProvider>
+          <Routes>
+            <Route path="/" element={<Users />}></Route>
+            <Route path="/create" element={<CreateGame />}></Route>
+            <Route path="/player" element={<Player />}></Route>
+          </Routes>
+          <SocketInfo />
+        </RoleProvider>
       </SocketProvider>
     </BrowserRouter>
   </>

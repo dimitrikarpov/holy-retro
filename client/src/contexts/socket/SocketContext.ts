@@ -7,21 +7,18 @@ export type TUser = {
   name: string
 }
 
-type TRole = 'none' | 'manager' | 'player'
 type TPeers = Record<string, Peer.Instance>
 
 interface ISocketContextState {
   socket: Socket | undefined
   peers: TPeers | undefined
   users: TUser[]
-  role: TRole
 }
 
 export const defaultSocketContextState: ISocketContextState = {
   socket: undefined,
   peers: undefined,
   users: [],
-  role: 'none',
 }
 
 type TSocketContextAction =
@@ -44,10 +41,6 @@ type TSocketContextAction =
   | {
       type: 'users:remove'
       payload: string
-    }
-  | {
-      type: 'role:set'
-      payload: TRole
     }
 
 export const SocketReducer = (
@@ -72,9 +65,6 @@ export const SocketReducer = (
         ...state,
         users: state.users.filter(({ sid }) => sid !== action.payload),
       }
-
-    case 'role:set':
-      return { ...state, role: action.payload }
 
     default:
       return { ...state }

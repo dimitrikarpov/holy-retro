@@ -1,5 +1,5 @@
+import SocketContext from 'contexts/socket/SocketContext'
 import { useContext } from 'react'
-import SocketContext from 'contexts/Socket/Context'
 
 interface ISocketInfoProps {}
 

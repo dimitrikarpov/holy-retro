@@ -13,7 +13,7 @@ import SocketContext, {
   defaultSocketContextState,
   SocketReducer,
   TUser,
-} from './Context'
+} from './SocketContext'
 import { getConfiguration } from './getConfiguration'
 
 let peers: Record<string, Peer.Instance> = {}
