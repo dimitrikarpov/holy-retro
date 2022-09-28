@@ -7,7 +7,6 @@ import { SocketInfo } from './routes/root/SocketInfo'
 import { Users } from 'routes/root/Users'
 import { CreateGame } from 'routes/create/CreateGame'
 import { Player } from 'routes/player/Player'
-// import { RoleProvider } from 'contexts/role/RoleProvider'
 import { ProfileProvider } from 'contexts/profile/ProfileProvider'
 import { PeersProvider } from 'contexts/peers/PeersProvider'
 
@@ -18,14 +17,12 @@ root.render(
       <ProfileProvider>
         <SocketProvider>
           <PeersProvider>
-            {/* <RoleProvider> */}
             <Routes>
               <Route path="/" element={<Users />}></Route>
               <Route path="/create" element={<CreateGame />}></Route>
               <Route path="/player" element={<Player />}></Route>
             </Routes>
             <SocketInfo />
-            {/* </RoleProvider> */}
           </PeersProvider>
         </SocketProvider>
       </ProfileProvider>

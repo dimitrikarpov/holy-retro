@@ -1,9 +1,8 @@
 import { useContext, useEffect } from 'react'
+import { Socket } from 'socket.io-client'
 import SocketContext from 'contexts/socket/SocketContext'
-import Peer from 'simple-peer'
 import { PeersContext, TPeer } from './PeersContext'
 import { getConfiguration } from './getConfiguration'
-import { Socket } from 'socket.io-client'
 
 type PeersProviderProps = {
   children?: React.ReactNode | undefined
@@ -17,23 +16,17 @@ export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
   let peers: TPeer[] = []
 
   useEffect(() => {
-    prepareListeners(peers, socket as Socket)
+    subscribeSocket(peers, socket as Socket)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <PeersContext.Provider
-      value={{
-        peers,
-      }}
-    >
-      {children}
-    </PeersContext.Provider>
+    <PeersContext.Provider value={{ peers }}>{children}</PeersContext.Provider>
   )
 }
 
-const prepareListeners = (peers: TPeer[], socket: Socket) => {
+const subscribeSocket = (peers: TPeer[], socket: Socket) => {
   socket!.on('peer:prepare', ({ sid }: { sid: string }) => {
     console.log('[peer:prepare]')
 
