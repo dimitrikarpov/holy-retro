@@ -1,17 +1,16 @@
 import { Server, Socket } from 'socket.io'
 import { TUser } from '../types/common'
-import { generateName } from '../utils/generateName'
 
 /** Master list of all connected users */
 let users: TUser[] = []
 
 export default function (io: Server, socket: Socket) {
-  const handshake = (callback: (users: TUser[]) => void) => {
+  const handshake = (name: string, callback: (users: TUser[]) => void) => {
     const reconnected = users.find(({ sid }) => socket.id === sid)
 
     if (!reconnected) {
       /** Generate a new user */
-      const newUser = { sid: socket.id, name: generateName() }
+      const newUser = { sid: socket.id, name }
       users.push(newUser)
 
       /** Send new user to all connected users */

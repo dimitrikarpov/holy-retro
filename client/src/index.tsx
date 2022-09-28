@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
@@ -9,21 +8,24 @@ import { Users } from 'routes/root/Users'
 import { CreateGame } from 'routes/create/CreateGame'
 import { Player } from 'routes/player/Player'
 import { RoleProvider } from 'contexts/role/RoleProvider'
+import { ProfileProvider } from 'contexts/profile/ProfileProvider'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <>
     <BrowserRouter>
-      <SocketProvider>
-        <RoleProvider>
-          <Routes>
-            <Route path="/" element={<Users />}></Route>
-            <Route path="/create" element={<CreateGame />}></Route>
-            <Route path="/player" element={<Player />}></Route>
-          </Routes>
-          <SocketInfo />
-        </RoleProvider>
-      </SocketProvider>
+      <ProfileProvider>
+        <SocketProvider>
+          <RoleProvider>
+            <Routes>
+              <Route path="/" element={<Users />}></Route>
+              <Route path="/create" element={<CreateGame />}></Route>
+              <Route path="/player" element={<Player />}></Route>
+            </Routes>
+            <SocketInfo />
+          </RoleProvider>
+        </SocketProvider>
+      </ProfileProvider>
     </BrowserRouter>
   </>
 )

@@ -1,6 +1,7 @@
 import {
   FunctionComponent,
   PropsWithChildren,
+  useContext,
   useEffect,
   useReducer,
   useState,
@@ -15,6 +16,7 @@ import SocketContext, {
   TUser,
 } from './SocketContext'
 import { getConfiguration } from './getConfiguration'
+import { ProfileContext } from 'contexts/profile/profileContext'
 
 let peers: Record<string, Peer.Instance> = {}
 let streams: MediaStream[] = []
@@ -25,6 +27,8 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
   children,
 }) => {
   const navigate = useNavigate()
+
+  const { name } = useContext(ProfileContext)
 
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
@@ -46,7 +50,7 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
     subscribe()
 
-    socket.emit('handshake', (users: TUser[]) => {
+    socket.emit('handshake', name, (users: TUser[]) => {
       SocketDispatch({
         type: 'users:update',
         payload: users,
