@@ -1,16 +1,17 @@
 import { createContext } from 'react'
 import Peer from 'simple-peer'
 
-export type TPeer = { name?: string; instance: Peer.Instance }
+export type TPeer = {
+  sid: string
+  instance: Peer.Instance
+  name?: string
+  role?: string
+}
 
 type TPeersContext = {
   peers: TPeer[]
-  addPeer: (instance: Peer.Instance) => void
-  setPeerName: (name: string, id: string) => void
 }
 
 export const PeersContext = createContext<TPeersContext>({
   peers: [],
-  addPeer: () => {},
-  setPeerName: (name, id) => {},
 })

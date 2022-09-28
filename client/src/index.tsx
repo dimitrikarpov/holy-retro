@@ -7,8 +7,9 @@ import { SocketInfo } from './routes/root/SocketInfo'
 import { Users } from 'routes/root/Users'
 import { CreateGame } from 'routes/create/CreateGame'
 import { Player } from 'routes/player/Player'
-import { RoleProvider } from 'contexts/role/RoleProvider'
+// import { RoleProvider } from 'contexts/role/RoleProvider'
 import { ProfileProvider } from 'contexts/profile/ProfileProvider'
+import { PeersProvider } from 'contexts/peers/PeersProvider'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
@@ -16,14 +17,16 @@ root.render(
     <BrowserRouter>
       <ProfileProvider>
         <SocketProvider>
-          <RoleProvider>
+          <PeersProvider>
+            {/* <RoleProvider> */}
             <Routes>
               <Route path="/" element={<Users />}></Route>
               <Route path="/create" element={<CreateGame />}></Route>
               <Route path="/player" element={<Player />}></Route>
             </Routes>
             <SocketInfo />
-          </RoleProvider>
+            {/* </RoleProvider> */}
+          </PeersProvider>
         </SocketProvider>
       </ProfileProvider>
     </BrowserRouter>

@@ -6,28 +6,19 @@ import {
   useReducer,
   useState,
 } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Peer from 'simple-peer'
-import { Socket } from 'socket.io-client'
 import { useSocket } from './useSocket'
 import SocketContext, {
   defaultSocketContextState,
   SocketReducer,
   TUser,
 } from './SocketContext'
-import { getConfiguration } from './getConfiguration'
 import { ProfileContext } from 'contexts/profile/profileContext'
-
-let peers: Record<string, Peer.Instance> = {}
-let streams: MediaStream[] = []
 
 interface ISocketContextComponentProps extends PropsWithChildren {}
 
 const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
   children,
 }) => {
-  const navigate = useNavigate()
-
   const { name } = useContext(ProfileContext)
 
   const [SocketState, SocketDispatch] = useReducer(
@@ -76,28 +67,6 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
       SocketDispatch({ type: 'users:remove', payload: uid })
     })
 
-    /** ----- Peer events ----- */
-
-    socket.on('peer:prepare', ({ sid }) => {
-      console.log('[peer:prepare]')
-
-      addPeer(sid, false, socket)
-
-      socket.emit('peer:init', { sid })
-    })
-
-    socket.on('peer:init', ({ sid }) => {
-      console.log('[peer:init]')
-
-      addPeer(sid, true, socket)
-    })
-
-    socket.on('peer:signal', ({ data, sid }) => {
-      console.log('[peer:signal]')
-
-      peers[sid].signal(data)
-    })
-
     /** ----- Reconnect events ----- */
 
     socket.io.on('reconnect', (attempt) => {
@@ -127,28 +96,3 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 }
 
 export default SocketProvider
-
-const addPeer = (sid: string, initiator: boolean, socket: Socket) => {
-  const configuration = getConfiguration()
-
-  const SimplePeerGlobal = window.SimplePeer
-
-  peers[sid] = new SimplePeerGlobal({
-    config: configuration,
-    initiator,
-  })
-
-  peers[sid].on('signal', (data) => {
-    socket.emit('peer:signal', { data, sid })
-  })
-
-  peers[sid].on('connect', () => {
-    console.log('connected with', sid)
-  })
-
-  peers[sid].on('data', (chunk) => {
-    console.log('DATA:', chunk)
-  })
-
-  console.log({ peers })
-}

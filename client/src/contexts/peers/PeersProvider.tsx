@@ -1,5 +1,9 @@
+import { useContext, useEffect } from 'react'
+import SocketContext from 'contexts/socket/SocketContext'
 import Peer from 'simple-peer'
 import { PeersContext, TPeer } from './PeersContext'
+import { getConfiguration } from './getConfiguration'
+import { Socket } from 'socket.io-client'
 
 type PeersProviderProps = {
   children?: React.ReactNode | undefined
@@ -8,25 +12,78 @@ type PeersProviderProps = {
 export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
   children,
 }) => {
+  const socket = useContext(SocketContext).SocketState!.socket
+
   let peers: TPeer[] = []
 
-  const addPeer = (instance: Peer.Instance) => {
-    peers.push({ instance })
-  }
+  useEffect(() => {
+    prepareListeners(peers, socket as Socket)
 
-  const setPeerName = (name: string, id: string) => {
-    // const peerFound =
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <PeersContext.Provider
       value={{
         peers,
-        addPeer,
-        setPeerName,
       }}
     >
       {children}
     </PeersContext.Provider>
   )
+}
+
+const prepareListeners = (peers: TPeer[], socket: Socket) => {
+  socket!.on('peer:prepare', ({ sid }: { sid: string }) => {
+    console.log('[peer:prepare]')
+
+    peers.push({
+      sid: socket!.id,
+      instance: preparePeer(sid, false, socket as Socket),
+    })
+
+    socket!.emit('peer:init', { sid })
+  })
+
+  socket!.on('peer:init', ({ sid }: { sid: string }) => {
+    console.log('[peer:init]')
+
+    peers.push({
+      sid: socket!.id,
+      instance: preparePeer(sid, true, socket as Socket),
+    })
+  })
+
+  socket!.on('peer:signal', ({ data, sid }: { data: any; sid: string }) => {
+    console.log('[peer:signal]')
+
+    const peerFound = peers.find(({ sid }) => sid === socket!.id)
+
+    peerFound!.instance.signal(data)
+  })
+}
+
+const preparePeer = (sid: string, initiator: boolean, socket: Socket) => {
+  const configuration = getConfiguration()
+
+  const SimplePeerGlobal = window.SimplePeer
+
+  const peer = new SimplePeerGlobal({
+    config: configuration,
+    initiator,
+  })
+
+  peer.on('signal', (data) => {
+    socket.emit('peer:signal', { data, sid })
+  })
+
+  peer.on('connect', () => {
+    console.log('connected with', sid)
+  })
+
+  peer.on('data', (chunk) => {
+    console.log('DATA:', chunk)
+  })
+
+  return peer
 }
