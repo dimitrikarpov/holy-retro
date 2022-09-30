@@ -4,11 +4,11 @@ import './index.css'
 import reportWebVitals from './reportWebVitals'
 import SocketProvider from 'contexts/socket/SocketProvider'
 import { SocketInfo } from './routes/root/SocketInfo'
-import { Users } from 'routes/root/Users'
 import { CreateGame } from 'routes/create/CreateGame'
 import { Player } from 'routes/player/Player'
 import { ProfileProvider } from 'contexts/profile/ProfileProvider'
 import { PeersProvider } from 'contexts/peers/PeersProvider'
+import { Home } from 'routes/root/Home'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
@@ -18,7 +18,7 @@ root.render(
         <SocketProvider>
           <PeersProvider>
             <Routes>
-              <Route path="/" element={<Users />}></Route>
+              <Route path="/" element={<Home />}></Route>
               <Route path="/create" element={<CreateGame />}></Route>
               <Route path="/player" element={<Player />}></Route>
             </Routes>

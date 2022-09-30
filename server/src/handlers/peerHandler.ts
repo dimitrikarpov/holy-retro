@@ -4,7 +4,7 @@ export default function (io: Server, socket: Socket) {
   const peerPrepare = () => {
     console.log('got PREPARE message', socket.id)
 
-    socket.broadcast.emit('peer:prepare', { sid: socket.id })
+    socket.broadcast.emit('peer:prepare', { sid: socket.id }) //
   }
 
   const peerInit = ({ sid }: { sid: string }) => {

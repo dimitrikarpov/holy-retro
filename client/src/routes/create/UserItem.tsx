@@ -1,3 +1,4 @@
+import { PeersContext } from 'contexts/peers/PeersContext'
 import SocketContext from 'contexts/socket/SocketContext'
 import { FunctionComponent, useContext } from 'react'
 
@@ -7,12 +8,13 @@ interface IUserItemProps {
 }
 
 export const UserItem: FunctionComponent<IUserItemProps> = ({ name, sid }) => {
-  const {
-    SocketState: { socket },
-  } = useContext(SocketContext)
+  const socket = useContext(SocketContext).SocketState!.socket
+  const { room } = useContext(PeersContext)
 
   const onClick = () => {
-    socket?.emit('peer:prepare')
+    socket?.emit('room:add-participant', sid, room)
+
+    socket?.emit('role:set', sid, 'player')
   }
 
   return (

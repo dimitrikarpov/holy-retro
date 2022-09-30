@@ -1,8 +1,10 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import SocketContext from 'contexts/socket/SocketContext'
 import { PeersContext, TPeer } from './PeersContext'
 import { getConfiguration } from './getConfiguration'
+import { ProfileContext, TRole } from 'contexts/profile/profileContext'
+import { NavigateFunction, useNavigate } from 'react-router-dom'
 
 type PeersProviderProps = {
   children?: React.ReactNode | undefined
@@ -12,21 +14,48 @@ export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
   children,
 }) => {
   const socket = useContext(SocketContext).SocketState!.socket
+  const { setRole } = useContext(ProfileContext)
+  const navigate = useNavigate()
+
+  const [room, setRoom] = useState<string | undefined>()
 
   let peers: TPeer[] = []
 
   useEffect(() => {
-    subscribeSocket(peers, socket as Socket)
+    subscribeSocket(peers, socket as Socket, setRoom, setRole, navigate)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <PeersContext.Provider value={{ peers }}>{children}</PeersContext.Provider>
+    <PeersContext.Provider value={{ peers, room, setRoom }}>
+      {children}
+    </PeersContext.Provider>
   )
 }
 
-const subscribeSocket = (peers: TPeer[], socket: Socket) => {
+const subscribeSocket = (
+  peers: TPeer[],
+  socket: Socket,
+  setRoom: React.Dispatch<React.SetStateAction<string | undefined>>,
+  setRole: React.Dispatch<React.SetStateAction<TRole>>,
+  navigate: NavigateFunction
+) => {
+  socket.on('room:add-participant', (roomName: string) => {
+    console.log('room:add-participant', roomName)
+
+    socket.emit('room:join', roomName)
+    setRoom(roomName)
+  })
+
+  socket.on('role:set', (role: TRole) => {
+    console.log('set:role', role)
+
+    setRole(role)
+    navigate('/player')
+  })
+
+  /** Peer events */
   socket!.on('peer:prepare', ({ sid }: { sid: string }) => {
     console.log('[peer:prepare]')
 

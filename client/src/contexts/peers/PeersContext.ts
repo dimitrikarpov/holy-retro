@@ -10,8 +10,12 @@ export type TPeer = {
 
 type TPeersContext = {
   peers: TPeer[]
+  room?: string
+  setRoom: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 export const PeersContext = createContext<TPeersContext>({
   peers: [],
+  room: '',
+  setRoom: () => {},
 })

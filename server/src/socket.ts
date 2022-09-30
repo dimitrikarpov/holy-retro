@@ -2,6 +2,8 @@ import http from 'http'
 import { Server, Socket } from 'socket.io'
 import userHanlder from './handlers/userHanlder'
 import peerHandler from './handlers/peerHandler'
+import roomHandler from './handlers/roomHandler'
+import roleHandler from './handlers/roleHandler'
 
 export default (httpServer: http.Server) => {
   const io = new Server(httpServer, {
@@ -18,6 +20,8 @@ export default (httpServer: http.Server) => {
   const onConnection = (socket: Socket) => {
     userHanlder(io, socket)
     peerHandler(io, socket)
+    roomHandler(io, socket)
+    roleHandler(io, socket)
   }
 
   io.on('connection', onConnection)
