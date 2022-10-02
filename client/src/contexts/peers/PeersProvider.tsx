@@ -41,8 +41,8 @@ const subscribeSocket = (
   setRole: React.Dispatch<React.SetStateAction<TRole>>,
   navigate: NavigateFunction
 ) => {
-  socket.on('room:add-participant', (roomName: string) => {
-    console.log('room:add-participant', roomName)
+  socket.on('room:invite', (roomName: string) => {
+    console.log('room:add-invite', roomName)
 
     socket.emit('room:join', roomName)
     setRoom(roomName)
@@ -60,7 +60,7 @@ const subscribeSocket = (
     console.log('[peer:prepare]')
 
     peers.push({
-      sid: socket!.id,
+      sid,
       instance: preparePeer(sid, false, socket as Socket),
     })
 
@@ -71,7 +71,7 @@ const subscribeSocket = (
     console.log('[peer:init]')
 
     peers.push({
-      sid: socket!.id,
+      sid,
       instance: preparePeer(sid, true, socket as Socket),
     })
   })
@@ -79,9 +79,11 @@ const subscribeSocket = (
   socket!.on('peer:signal', ({ data, sid }: { data: any; sid: string }) => {
     console.log('[peer:signal]')
 
-    const peerFound = peers.find(({ sid }) => sid === socket!.id)
+    const peerFound = peers.find((peer) => sid === peer.sid)
 
     peerFound!.instance.signal(data)
+
+    console.log({ peers })
   })
 }
 

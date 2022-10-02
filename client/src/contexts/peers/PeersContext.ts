@@ -6,6 +6,7 @@ export type TPeer = {
   instance: Peer.Instance
   name?: string
   role?: string
+  isAllConnected?: boolean
 }
 
 type TPeersContext = {

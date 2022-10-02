@@ -24,8 +24,6 @@ export const ProfileProvider: FunctionComponent<ProfileProviderProps> = ({
 
   const [role, setRole] = useState<TRole>('none')
 
-  console.log('rendered??', name)
-
   return (
     <ProfileContext.Provider value={{ name, role, setRole }}>
       {children}

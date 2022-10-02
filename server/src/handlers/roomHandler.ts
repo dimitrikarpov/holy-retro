@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io'
 type TRooms = Record<string, string[]>
 
 /** Master list of all created rooms */
-let rooms: TRooms = {}
+export let rooms: TRooms = {}
 
 export default function (io: Server, socket: Socket) {
   const create = (name: string) => {
@@ -17,16 +17,27 @@ export default function (io: Server, socket: Socket) {
   const join = (name: string) => {
     console.log('room:join', name, socket.id)
 
+    rooms[name].push(socket.id)
+
     socket.join(name)
+
+    socket.broadcast.emit('room:joinded', socket.id)
+
+    // socket
+    //   .in(name)
+    //   .allSockets()
+    //   .then((allSockets) => {
+    //     console.log({ allSockets: [...allSockets] })
+    //   })
   }
 
-  const addParticipant = (sid: string, roomName: string) => {
-    console.log('room:add-participant', sid)
+  const invite = (sid: string, roomName: string) => {
+    console.log('room:invite', sid)
 
-    io.to(sid).emit('room:add-participant', roomName)
+    io.to(sid).emit('room:invite', roomName)
   }
 
   socket.on('room:create', create)
-  socket.on('room:add-participant', addParticipant)
+  socket.on('room:invite', invite)
   socket.on('room:join', join)
 }
