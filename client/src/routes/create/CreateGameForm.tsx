@@ -1,4 +1,4 @@
-import SocketContext, { TUser } from 'contexts/socket/SocketContext'
+import SocketContext from 'contexts/socket/SocketContext'
 import React, { useContext, useState } from 'react'
 
 export type CreateGameFomDto = {
@@ -28,8 +28,6 @@ export const CreateGameForm: React.FunctionComponent<CreateGameFormProps> = ({
   }
 
   const selecPlayer = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log({ ff: e })
-
     setPlayer(e.target.value)
   }
 
