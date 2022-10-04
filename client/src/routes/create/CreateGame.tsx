@@ -10,7 +10,7 @@ export const CreateGame: React.FunctionComponent = () => {
   const {
     SocketState: { socket },
   } = useContext(SocketContext)
-  const { isAllConnected } = useContext(PeersContext)
+  const { peers, isAllConnected, setMyRole } = useContext(PeersContext)
 
   const name = useMyName()
 
@@ -25,9 +25,24 @@ export const CreateGame: React.FunctionComponent = () => {
   }, [])
 
   useEffect(() => {
-    if (isAllConnected) {
-      console.log('HOORAY')
-    }
+    if (!isAllConnected) return
+
+    console.log('HOORAY')
+
+    /** set own peers roles */
+
+    setMyRole('manager')
+
+    peers.find(({ sid }) => sid === roles.player)!.role = 'player'
+
+    console.log({ peers, roles })
+
+    /** emit peers roles */
+    peers.forEach((peer) => {
+      peer.instance.send('foo')
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAllConnected])
 
   const onSubmit = async ({ rom, player }: CreateGameFomDto) => {

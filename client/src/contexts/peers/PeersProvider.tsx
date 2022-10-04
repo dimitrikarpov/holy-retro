@@ -1,20 +1,21 @@
 import { useContext, useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import SocketContext from 'contexts/socket/SocketContext'
-import { PeersContext, TPeer } from './PeersContext'
+import { PeersContext, TPeer, TRole } from './PeersContext'
 import { getConfiguration } from './getConfiguration'
 
 type PeersProviderProps = {
   children?: React.ReactNode | undefined
 }
 
+let peers: TPeer[] = []
+
 export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
   children,
 }) => {
   const socket = useContext(SocketContext).SocketState!.socket!
 
-  let peers: TPeer[] = []
-
+  const [myRole, setMyRole] = useState<TRole>('none')
   const [isAllConnected, setIsAllConnected] = useState<boolean>(false)
 
   const onPeerConnect = (sid: string) => {
@@ -33,7 +34,7 @@ export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
   }, [])
 
   return (
-    <PeersContext.Provider value={{ peers, isAllConnected, setIsAllConnected }}>
+    <PeersContext.Provider value={{ peers, isAllConnected, myRole, setMyRole }}>
       {children}
     </PeersContext.Provider>
   )
@@ -43,23 +44,13 @@ const subscribeSocket = (
   peers: TPeer[],
   socket: Socket,
   onPeerConnect: (sid: string) => void
-  // setRoom: React.Dispatch<React.SetStateAction<string | undefined>>
-  // setRole: React.Dispatch<React.SetStateAction<TRole>>,
-  // navigate: NavigateFunction
 ) => {
+  /** Room events */
   socket.on('room:invite', (roomName: string) => {
     console.log('room:add-invite', roomName)
 
     socket.emit('room:join', roomName)
-    // setRoom(roomName)
   })
-
-  // socket.on('role:set', (role: TRole) => {
-  //   console.log('set:role', role)
-
-  //   setRole(role)
-  //   navigate('/player')
-  // })
 
   /** Peer events */
   socket.on('peer:prepare', ({ sid }: { sid: string }) => {
