@@ -1,14 +1,13 @@
-import { PeersContext } from 'contexts/peers/PeersContext'
-import { ProfileContext } from 'contexts/profile/profileContext'
 import SocketContext from 'contexts/socket/SocketContext'
+import { useMyName } from 'contexts/socket/useMyName'
 import { useContext } from 'react'
 
 interface ISocketInfoProps {}
 
 export const SocketInfo: React.FunctionComponent<ISocketInfoProps> = () => {
   const { socket, users } = useContext(SocketContext).SocketState
-  const { name, role } = useContext(ProfileContext)
-  const { room } = useContext(PeersContext)
+
+  const name = useMyName()
 
   return (
     <div className="socket-info">
@@ -18,14 +17,6 @@ export const SocketInfo: React.FunctionComponent<ISocketInfoProps> = () => {
 
       <p>
         sid: <strong>{socket?.id}</strong>
-      </p>
-
-      <p>
-        room: <strong>{room}</strong>
-      </p>
-
-      <p>
-        role: <strong>{role}</strong>
       </p>
 
       <p>

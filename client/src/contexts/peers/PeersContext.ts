@@ -1,22 +1,23 @@
-import { createContext } from 'react'
+import React, { createContext } from 'react'
 import Peer from 'simple-peer'
+
+export type TRole = 'none' | 'player' | 'manager'
 
 export type TPeer = {
   sid: string
   instance: Peer.Instance
   name?: string
-  role?: string
-  isAllConnected?: boolean
+  role?: TRole
 }
 
 type TPeersContext = {
   peers: TPeer[]
-  room?: string
-  setRoom: React.Dispatch<React.SetStateAction<string | undefined>>
+  isAllConnected?: boolean
+  setIsAllConnected: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const PeersContext = createContext<TPeersContext>({
   peers: [],
-  room: '',
-  setRoom: () => {},
+  isAllConnected: false,
+  setIsAllConnected: () => {},
 })

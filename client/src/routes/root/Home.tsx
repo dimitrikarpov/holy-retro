@@ -1,24 +1,12 @@
-import { useContext } from 'react'
-import { ProfileContext } from 'contexts/profile/profileContext'
 import { useNavigate } from 'react-router-dom'
-import SocketContext from 'contexts/socket/SocketContext'
-import { PeersContext } from 'contexts/peers/PeersContext'
+import { useMyName } from 'contexts/socket/useMyName'
 
 export const Home = () => {
-  const {
-    SocketState: { socket },
-  } = useContext(SocketContext)
-  const { name, setRole } = useContext(ProfileContext)
-  const { setRoom } = useContext(PeersContext)
+  const name = useMyName()
+
   const navigate = useNavigate()
 
   const onCreate = () => {
-    const roomName = `${name}-room`
-
-    socket?.emit('room:create', roomName)
-    setRoom(roomName)
-    setRole('manager')
-
     navigate('/create')
   }
 

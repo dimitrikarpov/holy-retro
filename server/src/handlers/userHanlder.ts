@@ -1,19 +1,22 @@
 import { Server, Socket } from 'socket.io'
 import { TUser } from '../types/common'
+import { generateUserName } from '../utils/generateUserName'
 
-/** Master list of all connected users */
 let users: TUser[] = []
 
 export default function (io: Server, socket: Socket) {
-  const handshake = (name: string, callback: (users: TUser[]) => void) => {
+  const handshake = (callback: (users: TUser[]) => void) => {
     const reconnected = users.find(({ sid }) => socket.id === sid)
 
     if (!reconnected) {
-      /** Generate a new user */
-      const newUser = { sid: socket.id, name }
+      const newUser = {
+        sid: socket.id,
+        name: generateUserName(),
+        isBusy: false,
+      }
+
       users.push(newUser)
 
-      /** Send new user to all connected users */
       socket.broadcast.emit('user_connected', newUser)
     }
 
@@ -30,4 +33,7 @@ export default function (io: Server, socket: Socket) {
 
   socket.on('handshake', handshake)
   socket.on('disconnect', disconnect)
+  // socket.on('user:connect')
+  // socket.on('user:set-busy')
+  // socket.on('user:set-not-busy')
 }

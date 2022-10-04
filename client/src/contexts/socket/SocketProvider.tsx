@@ -1,7 +1,6 @@
 import {
   FunctionComponent,
   PropsWithChildren,
-  useContext,
   useEffect,
   useReducer,
   useState,
@@ -12,15 +11,12 @@ import SocketContext, {
   SocketReducer,
   TUser,
 } from './SocketContext'
-import { ProfileContext } from 'contexts/profile/profileContext'
 
 interface ISocketContextComponentProps extends PropsWithChildren {}
 
 const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
   children,
 }) => {
-  const { name } = useContext(ProfileContext)
-
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
     defaultSocketContextState
@@ -41,7 +37,7 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
     subscribe()
 
-    socket.emit('handshake', name, (users: TUser[]) => {
+    socket.emit('handshake', (users: TUser[]) => {
       SocketDispatch({
         type: 'users:update',
         payload: users,
