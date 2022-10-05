@@ -37,9 +37,21 @@ export const CreateGame: React.FunctionComponent = () => {
 
     console.log({ peers, roles })
 
-    /** emit peers roles */
+    /** send roles to peers */
     peers.forEach((peer) => {
-      peer.instance.send('foo')
+      peer.instance.send(
+        createPeerMessage('peer:update-role', {
+          sid: socket!.id,
+          role: 'manager',
+        })
+      )
+
+      peer.instance.send(
+        createPeerMessage('peer:update-role', {
+          sid: roles.player,
+          role: 'player',
+        })
+      )
     })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,4 +102,12 @@ onMount: создаём комнату
       )}
     </>
   )
+}
+
+const createPeerMessage = (type: string, payload: any): string => {
+  return JSON.stringify({ type, payload })
+}
+
+const parsePeerMessage = (message: string) => {
+  return JSON.parse(message)
 }

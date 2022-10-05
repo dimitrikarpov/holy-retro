@@ -28,8 +28,23 @@ export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
     }
   }
 
+  const onPeerData = (chunk: Uint8Array) => {
+    const message = JSON.parse(chunk.toString())
+
+    console.log('message recieved', message)
+
+    if (message.type === 'peer:update-role') {
+      if (message.payload?.sid === socket.id) {
+        setMyRole(message.payload.role)
+      } else {
+        peers.find(({ sid }) => sid === message.payload.sid)!.role =
+          message.payload.role
+      }
+    }
+  }
+
   useEffect(() => {
-    subscribeSocket(peers, socket, onPeerConnect)
+    subscribeSocket(peers, socket, onPeerConnect, onPeerData)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -43,7 +58,8 @@ export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
 const subscribeSocket = (
   peers: TPeer[],
   socket: Socket,
-  onPeerConnect: (sid: string) => void
+  onPeerConnect: (sid: string) => void,
+  onPeerData: (chunk: Uint8Array) => void
 ) => {
   /** Room events */
   socket.on('room:invite', (roomName: string) => {
@@ -58,7 +74,13 @@ const subscribeSocket = (
 
     peers.push({
       sid,
-      instance: preparePeer(sid, false, socket as Socket, onPeerConnect),
+      instance: preparePeer(
+        sid,
+        false,
+        socket as Socket,
+        onPeerConnect,
+        onPeerData
+      ),
     })
 
     socket.emit('peer:init', { sid })
@@ -69,7 +91,13 @@ const subscribeSocket = (
 
     peers.push({
       sid,
-      instance: preparePeer(sid, true, socket as Socket, onPeerConnect),
+      instance: preparePeer(
+        sid,
+        true,
+        socket as Socket,
+        onPeerConnect,
+        onPeerData
+      ),
     })
   })
 
@@ -88,7 +116,8 @@ const preparePeer = (
   sid: string,
   initiator: boolean,
   socket: Socket,
-  onPeerConnect: (sid: string) => void
+  onPeerConnect: (sid: string) => void,
+  onPeerData: (chunk: Uint8Array) => void
 ) => {
   const configuration = getConfiguration()
 
@@ -108,9 +137,24 @@ const preparePeer = (
     onPeerConnect(sid)
   })
 
-  peer.on('data', (chunk) => {
-    console.log('DATA:', chunk)
+  peer.on('data', (chunk: Uint8Array) => {
+    // console.log('DATA:', chunk)
+    onPeerData(chunk)
   })
 
   return peer
 }
+
+/*
+
+{type: 'peer:update-role', payload: {sid, role} }
+
+{type: 'emulator:set-rom', payload: {rom: base64}}
+
+{type: 'emulator:init'}
+
+{type: 'emulator:loaded'}
+
+{type: 'stream:start'}
+
+*/
