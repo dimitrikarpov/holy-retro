@@ -3,6 +3,7 @@ import { Socket } from 'socket.io-client'
 import SocketContext from 'contexts/socket/SocketContext'
 import { PeersContext, TPeer, TRole } from './PeersContext'
 import { getConfiguration } from './getConfiguration'
+import { useNavigate } from 'react-router-dom'
 
 type PeersProviderProps = {
   children?: React.ReactNode | undefined
@@ -13,6 +14,7 @@ let peers: TPeer[] = []
 export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
   children,
 }) => {
+  const navigate = useNavigate()
   const socket = useContext(SocketContext).SocketState!.socket!
 
   const [myRole, setMyRole] = useState<TRole>('none')
@@ -36,6 +38,10 @@ export const PeersProvider: React.FunctionComponent<PeersProviderProps> = ({
     if (message.type === 'peer:update-role') {
       if (message.payload?.sid === socket.id) {
         setMyRole(message.payload.role)
+
+        if (message.payload.role === 'player') {
+          navigate('/player')
+        }
       } else {
         peers.find(({ sid }) => sid === message.payload.sid)!.role =
           message.payload.role

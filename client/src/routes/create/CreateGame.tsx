@@ -14,7 +14,7 @@ export const CreateGame: React.FunctionComponent = () => {
 
   const name = useMyName()
 
-  const [rom, setRom] = useState<File>()
+  const [rom, setRom] = useState<string>()
   const [player, setPlayer] = useState<string>()
   const { current: roles } = useRef({ manager: '', player: '' })
 
@@ -27,15 +27,28 @@ export const CreateGame: React.FunctionComponent = () => {
   useEffect(() => {
     if (!isAllConnected) return
 
-    console.log('HOORAY')
-
-    /** set own peers roles */
-
+    /** associate roles with local peers */
     setMyRole('manager')
-
     peers.find(({ sid }) => sid === roles.player)!.role = 'player'
 
-    console.log({ peers, roles })
+    /** subscribe peers */
+    peers
+      .find(({ role }) => role === 'player')
+      ?.instance.on('data', (chunk: Uint8Array) => {
+        const message = parsePeerMessage(chunk)
+
+        if (message.type === 'peer:player-loaded') {
+          // send rom
+
+          const romMessage = createPeerMessage('peer:set-rom', {
+            rom,
+          })
+
+          console.log({ romMessage })
+
+          peers.find(({ role }) => role === 'player')?.instance.send(romMessage)
+        }
+      })
 
     /** send roles to peers */
     peers.forEach((peer) => {
@@ -53,6 +66,8 @@ export const CreateGame: React.FunctionComponent = () => {
         })
       )
     })
+
+    // peers[0].instance.send(createPeerMessage('peer:set-rom', { rom: 'foo' }))
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAllConnected])
@@ -94,20 +109,16 @@ onMount: создаём комнату
       {shouldDisplayForm ? (
         <CreateGameForm onSubmit={onSubmit} />
       ) : (
-        <CreateGameSummary
-          manager={roles.manager}
-          player={roles.player}
-          rom={rom}
-        />
+        <CreateGameSummary manager={roles.manager} player={roles.player} />
       )}
     </>
   )
 }
 
-const createPeerMessage = (type: string, payload: any): string => {
+export const createPeerMessage = (type: string, payload?: any): string => {
   return JSON.stringify({ type, payload })
 }
 
-const parsePeerMessage = (message: string) => {
-  return JSON.parse(message)
+export const parsePeerMessage = (chunk: Uint8Array) => {
+  return JSON.parse(chunk.toString())
 }

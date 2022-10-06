@@ -1,8 +1,9 @@
 import SocketContext from 'contexts/socket/SocketContext'
 import React, { useContext, useState } from 'react'
+import { convertFileToBase64 } from 'utils/covertFileToBase64'
 
 export type CreateGameFomDto = {
-  rom: File
+  rom: string
   player: string
 }
 
@@ -31,12 +32,14 @@ export const CreateGameForm: React.FunctionComponent<CreateGameFormProps> = ({
     setPlayer(e.target.value)
   }
 
-  const submit = (e: React.SyntheticEvent) => {
+  const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
 
     if (!rom || !player) return
 
-    onSubmit({ rom, player })
+    const romAsBase64 = await convertFileToBase64(rom)
+
+    onSubmit({ rom: romAsBase64, player })
   }
 
   const availableUsers = users
