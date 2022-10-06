@@ -39,6 +39,8 @@ export const CreateGameForm: React.FunctionComponent<CreateGameFormProps> = ({
 
     const romAsBase64 = await convertFileToBase64(rom)
 
+    // console.log({ rom })
+
     onSubmit({ rom: romAsBase64, player })
   }
 

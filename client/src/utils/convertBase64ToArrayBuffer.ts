@@ -11,10 +11,10 @@ await (await fetch("data:application/octet;base64," + base64data)).arrayBuffer()
 
 export const convertBase64ToArrayBuffer = async (
   base64: string
-): Promise<ArrayBuffer> => {
+): Promise<Uint8Array> => {
   const buffer = await (await fetch(base64)).arrayBuffer()
 
-  return buffer
+  // return buffer
 
-  // return new Uint8Array(buff)
+  return new Uint8Array(buffer)
 }

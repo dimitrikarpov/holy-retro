@@ -1,12 +1,13 @@
 import { PeersContext } from 'contexts/peers/PeersContext'
 import { useContext, useEffect, useState } from 'react'
 import { createPeerMessage, parsePeerMessage } from 'routes/create/CreateGame'
+import { RetroarchService } from 'services/retroarch/RetroarchService'
 import { convertBase64ToArrayBuffer } from 'utils/convertBase64ToArrayBuffer'
 
 export const Player: React.FunctionComponent = () => {
   const { peers } = useContext(PeersContext)
 
-  const [rom, setRom] = useState<ArrayBuffer>()
+  const [rom, setRom] = useState<Uint8Array>()
 
   useEffect(() => {
     const managerPeer = peers.find(({ role }) => role === 'manager')
@@ -24,7 +25,7 @@ export const Player: React.FunctionComponent = () => {
         console.log('peer:set-rom')
         // setRom(message.payload.rom)
         convertBase64ToArrayBuffer(message.payload.rom).then(
-          (rom: ArrayBuffer) => {
+          (rom: Uint8Array) => {
             setRom(rom)
           }
         )
@@ -35,9 +36,26 @@ export const Player: React.FunctionComponent = () => {
   }, [])
 
   useEffect(() => {
+    const init = async () => {
+      RetroarchService.prepareModule()
+      await RetroarchService.loadCore(
+        `${process.env.PUBLIC_URL}/cores/nestopia_libretro.js`
+      )
+    }
+
+    init()
+  }, [])
+
+  useEffect(() => {
     if (!rom) return
 
-    console.log('ROM HAS SETTLED!!')
+    console.log('ROM HAS SETTLED!!', rom)
+
+    try {
+      RetroarchService.run(rom)
+    } catch (e) {
+      console.log(e)
+    }
   }, [rom])
 
   return (
@@ -46,6 +64,15 @@ export const Player: React.FunctionComponent = () => {
     </>
   )
 }
+
+/*
+
+  const onUpload = (rom) => {
+    RetroarchService.run(rom)
+  }
+
+
+*/
 
 /*
   player states:
