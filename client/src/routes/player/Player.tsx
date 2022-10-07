@@ -4,10 +4,12 @@ import { createPeerMessage, parsePeerMessage } from 'routes/create/CreateGame'
 import { RetroarchService } from 'services/retroarch/RetroarchService'
 import { convertBase64ToArrayBuffer } from 'utils/convertBase64ToArrayBuffer'
 
+let stream: MediaStream
+
 export const Player: React.FunctionComponent = () => {
   const { peers } = useContext(PeersContext)
 
-  const [rom, setRom] = useState<Uint8Array>()
+  const [rom, setRom] = useState<any>()
 
   useEffect(() => {
     const managerPeer = peers.find(({ role }) => role === 'manager')
@@ -24,11 +26,9 @@ export const Player: React.FunctionComponent = () => {
       if (message.type === 'peer:set-rom') {
         console.log('peer:set-rom')
         // setRom(message.payload.rom)
-        convertBase64ToArrayBuffer(message.payload.rom).then(
-          (rom: Uint8Array) => {
-            setRom(rom)
-          }
-        )
+        convertBase64ToArrayBuffer(message.payload.rom).then((rom) => {
+          setRom(rom)
+        })
       }
     })
 
@@ -51,11 +51,28 @@ export const Player: React.FunctionComponent = () => {
 
     console.log('ROM HAS SETTLED!!', rom)
 
-    try {
-      RetroarchService.run(rom)
-    } catch (e) {
-      console.log(e)
-    }
+    // TODO: timeout for fixing 'undefined HEAP8' issue. we need actually know then module is ready
+    setTimeout(() => {
+      try {
+        RetroarchService.run(rom)
+
+        setTimeout(() => {
+          const canvasEl = document.getElementById(
+            'canvas'
+          ) as HTMLCanvasElement
+
+          console.log({ canvasEl })
+
+          stream = canvasEl.captureStream(60)
+
+          console.log({ stream })
+
+          peers[0].instance.addStream(stream)
+        }, 2000)
+      } catch (e) {
+        console.log(e)
+      }
+    }, 2000)
   }, [rom])
 
   return (

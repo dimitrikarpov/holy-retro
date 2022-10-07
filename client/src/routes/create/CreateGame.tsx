@@ -50,6 +50,23 @@ export const CreateGame: React.FunctionComponent = () => {
         }
       })
 
+    /** subscribe for stream */
+
+    peers
+      .find(({ role }) => role === 'player')
+      ?.instance.on('stream', (stream) => {
+        console.log('go STREAM')
+
+        // got remote video stream, now let's show it in a video tag
+        var video = document.querySelector('video') as HTMLVideoElement
+
+        if (!video) return
+
+        video.srcObject = stream
+
+        video.play()
+      })
+
     /** send roles to peers */
     peers.forEach((peer) => {
       peer.instance.send(

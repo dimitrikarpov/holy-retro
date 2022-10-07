@@ -48,6 +48,8 @@ class RetroarchService {
   }
 
   static run(rom) {
+    console.log({ rom })
+
     //copy rom
     window.FS.writeFile('/rom.bin', rom)
 
