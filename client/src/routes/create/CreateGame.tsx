@@ -59,11 +59,19 @@ export const CreateGame: React.FunctionComponent = () => {
 
         // got remote video stream, now let's show it in a video tag
         var video = document.querySelector('video') as HTMLVideoElement
+        var audio = document.querySelector('audio') as HTMLAudioElement
 
-        if (!video) return
+        if (!video || !audio) return
 
-        video.srcObject = stream
+        console.log({ stream })
 
+        const videoStream = new MediaStream([...stream.getVideoTracks()])
+        const audioStream = new MediaStream([...stream.getAudioTracks()])
+
+        audio.srcObject = audioStream
+        audio.play()
+
+        video.srcObject = videoStream
         video.play()
       })
 

@@ -808,6 +808,7 @@ var Browser = {
       Module.noImageDecoding = true
     }
     var imagePlugin = {}
+
     imagePlugin['canHandle'] = function imagePlugin_canHandle(name) {
       return !Module.noImageDecoding && /\.(jpg|jpeg|png|bmp)$/i.test(name)
     }
@@ -860,6 +861,9 @@ var Browser = {
     }
     Module['preloadPlugins'].push(imagePlugin)
     var audioPlugin = {}
+
+    console.warn({ audioPlugin })
+
     audioPlugin['canHandle'] = function audioPlugin_canHandle(name) {
       return (
         !Module.noAudioDecoding &&
@@ -934,6 +938,9 @@ var Browser = {
           }
           audio.src =
             'data:audio/x-' + name.substr(-3) + ';base64,' + encode64(byteArray)
+
+          console.log({ audio })
+
           finish(audio)
         }
         audio.src = url

@@ -61,13 +61,22 @@ export const Player: React.FunctionComponent = () => {
             'canvas'
           ) as HTMLCanvasElement
 
-          console.log({ canvasEl })
-
           stream = canvasEl.captureStream(60)
 
-          console.log({ stream })
+          const audioStream = window.RA.context.createMediaStreamDestination()
+            .stream as MediaStream
 
-          peers[0].instance.addStream(stream)
+          console.log({ stream, audioStream })
+
+          const newStream = new MediaStream()
+          stream.getTracks().forEach((track) => newStream.addTrack(track))
+          audioStream.getTracks().forEach((track) => newStream.addTrack(track))
+
+          console.log({ stream, audioStream, newStream })
+
+          peers[0].instance.addStream(newStream)
+
+          // RA.context.createMediaStreamDestination().stream type of media stream
         }, 2000)
       } catch (e) {
         console.log(e)

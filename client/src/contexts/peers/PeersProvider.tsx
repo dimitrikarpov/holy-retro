@@ -113,8 +113,6 @@ const subscribeSocket = (
     const peerFound = peers.find((peer) => sid === peer.sid)
 
     peerFound!.instance.signal(data)
-
-    console.log({ peers })
   })
 }
 
@@ -144,7 +142,6 @@ const preparePeer = (
   })
 
   peer.on('data', (chunk: Uint8Array) => {
-    // console.log('DATA:', chunk)
     onPeerData(chunk)
   })
 
