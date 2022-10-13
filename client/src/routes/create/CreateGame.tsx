@@ -5,6 +5,9 @@ import { CreateGameFomDto, CreateGameForm } from './CreateGameForm'
 import { CreateGameSummary } from './CreateGameSummary'
 import { emitAndWaitForAnswer } from 'utils/emitAndWaitForAnswer'
 import { PeersContext } from 'contexts/peers/PeersContext'
+import { Recorder } from 'routes/player/Recorder'
+
+let capturedStream: MediaStream
 
 export const CreateGame: React.FunctionComponent = () => {
   const {
@@ -17,6 +20,8 @@ export const CreateGame: React.FunctionComponent = () => {
   const [rom, setRom] = useState<string>()
   const [player, setPlayer] = useState<string>()
   const { current: roles } = useRef({ manager: '', player: '' })
+
+  const [isStreamReady, setIsStreamReady] = useState<boolean>(false)
 
   useEffect(() => {
     socket?.emit('room:create', name)
@@ -59,20 +64,26 @@ export const CreateGame: React.FunctionComponent = () => {
 
         // got remote video stream, now let's show it in a video tag
         var video = document.querySelector('video') as HTMLVideoElement
-        var audio = document.querySelector('audio') as HTMLAudioElement
+        // var audio = document.querySelector('audio') as HTMLAudioElement
 
-        if (!video || !audio) return
+        if (!video) return
 
         console.log({ stream })
 
-        const videoStream = new MediaStream([...stream.getVideoTracks()])
-        const audioStream = new MediaStream([...stream.getAudioTracks()])
+        const videoStream = stream
 
-        audio.srcObject = audioStream
-        audio.play()
+        capturedStream = stream
+
+        // const videoStream = new MediaStream([...stream.getVideoTracks()])
+        // const audioStream = new MediaStream([...stream.getAudioTracks()])
+
+        // audio.srcObject = audioStream
+        // audio.play()
 
         video.srcObject = videoStream
         video.play()
+
+        setIsStreamReady(true)
       })
 
     /** send roles to peers */
@@ -136,6 +147,8 @@ onMount: создаём комнату
       ) : (
         <CreateGameSummary manager={roles.manager} player={roles.player} />
       )}
+
+      {/* {isStreamReady && capturedStream && <Recorder stream={capturedStream} />} */}
     </>
   )
 }

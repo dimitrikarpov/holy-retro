@@ -24,7 +24,7 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
   const [loading, setLoading] = useState(true)
 
-  const socket = useSocket('ws://localhost:1337', {
+  const socket = useSocket('ws://192.168.1.104:1337', {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,

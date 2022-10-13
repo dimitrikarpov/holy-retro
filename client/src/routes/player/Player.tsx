@@ -3,13 +3,13 @@ import { useContext, useEffect, useState } from 'react'
 import { createPeerMessage, parsePeerMessage } from 'routes/create/CreateGame'
 import { RetroarchService } from 'services/retroarch/RetroarchService'
 import { convertBase64ToArrayBuffer } from 'utils/convertBase64ToArrayBuffer'
-
-let stream: MediaStream
+import { Recorder } from './Recorder'
 
 export const Player: React.FunctionComponent = () => {
   const { peers } = useContext(PeersContext)
 
   const [rom, setRom] = useState<any>()
+  const [isStreamReady, setIsStreamReady] = useState<boolean>(false)
 
   useEffect(() => {
     const managerPeer = peers.find(({ role }) => role === 'manager')
@@ -20,8 +20,6 @@ export const Player: React.FunctionComponent = () => {
       console.log('in player page catched!!', chunk)
 
       const message = parsePeerMessage(chunk)
-
-      console.log({ message })
 
       if (message.type === 'peer:set-rom') {
         console.log('peer:set-rom')
@@ -49,8 +47,6 @@ export const Player: React.FunctionComponent = () => {
   useEffect(() => {
     if (!rom) return
 
-    console.log('ROM HAS SETTLED!!', rom)
-
     // TODO: timeout for fixing 'undefined HEAP8' issue. we need actually know then module is ready
     setTimeout(() => {
       try {
@@ -60,23 +56,16 @@ export const Player: React.FunctionComponent = () => {
           const canvasEl = document.getElementById(
             'canvas'
           ) as HTMLCanvasElement
+          const videoStream = canvasEl.captureStream(60)
+          const audioStream = window.RA.xdest.stream as MediaStream
 
-          stream = canvasEl.captureStream(60)
+          const stream = new MediaStream()
+          videoStream.getTracks().forEach((track) => stream.addTrack(track))
+          audioStream.getTracks().forEach((track) => stream.addTrack(track))
 
-          const audioStream = window.RA.context.createMediaStreamDestination()
-            .stream as MediaStream
+          peers[0].instance.addStream(stream)
 
-          console.log({ stream, audioStream })
-
-          const newStream = new MediaStream()
-          stream.getTracks().forEach((track) => newStream.addTrack(track))
-          audioStream.getTracks().forEach((track) => newStream.addTrack(track))
-
-          console.log({ stream, audioStream, newStream })
-
-          peers[0].instance.addStream(newStream)
-
-          // RA.context.createMediaStreamDestination().stream type of media stream
+          setIsStreamReady(true)
         }, 2000)
       } catch (e) {
         console.log(e)
@@ -87,6 +76,7 @@ export const Player: React.FunctionComponent = () => {
   return (
     <>
       <h1>Player page</h1>
+      {/* {isStreamReady && <Recorder stream={thing} />} */}
     </>
   )
 }
@@ -121,3 +111,11 @@ export const Player: React.FunctionComponent = () => {
   {type: save:recieved}
 
 */
+
+/**
+ 
+audioinput: Default id = default
+audioinput: Built-in Audio Analog Stereo 
+id = a9cc45db6f25575fa7f45fea04b759f671326ef00d2a041354798271d2c4f9eb
+     a9cc45db6f25575fa7f45fea04b759f671326ef00d2a041354798271d2c4f9eb
+ */
