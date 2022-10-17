@@ -7,8 +7,6 @@ import { emitAndWaitForAnswer } from 'utils/emitAndWaitForAnswer'
 import { PeersContext } from 'contexts/peers/PeersContext'
 import { Recorder } from 'routes/player/Recorder'
 
-let capturedStream: MediaStream
-
 export const CreateGame: React.FunctionComponent = () => {
   const {
     SocketState: { socket },
@@ -64,23 +62,10 @@ export const CreateGame: React.FunctionComponent = () => {
 
         // got remote video stream, now let's show it in a video tag
         var video = document.querySelector('video') as HTMLVideoElement
-        // var audio = document.querySelector('audio') as HTMLAudioElement
-
-        if (!video) return
 
         console.log({ stream })
 
-        const videoStream = stream
-
-        capturedStream = stream
-
-        // const videoStream = new MediaStream([...stream.getVideoTracks()])
-        // const audioStream = new MediaStream([...stream.getAudioTracks()])
-
-        // audio.srcObject = audioStream
-        // audio.play()
-
-        video.srcObject = videoStream
+        video.srcObject = stream
         video.play()
 
         setIsStreamReady(true)
