@@ -70,7 +70,7 @@ export const Player: React.FunctionComponent = () => {
       } catch (e) {
         console.log(e)
       }
-    }, 2000)
+    }, 3000)
   }, [rom])
 
   return (
