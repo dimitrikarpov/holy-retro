@@ -8,8 +8,6 @@ services:
     restart: always
     ports:
       - "1337:1337"
-    # env_file:
-    #   - .env.server.prod
     environment:
       - PORT=1337
       - FOO=pbar
@@ -24,8 +22,6 @@ services:
     ports:
       - "443:443"
       - "80:80"
-    # env_file:
-    #   - .env.client.prod
     environment:
       - REACT_APP_SOCKET_URL=ws://109.234.39.57:1337
       - FOO=cbar
