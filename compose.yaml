@@ -8,6 +8,8 @@ services:
     restart: always
     ports:
       - "1337:1337"
+    env_file:
+      - .env.server.prod
 
   # Client
   client:
@@ -19,3 +21,5 @@ services:
     ports:
       - "443:443"
       - "80:80"
+    env_file:
+      - .env.client.prod
