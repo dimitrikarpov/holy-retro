@@ -24,14 +24,11 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
   const [loading, setLoading] = useState(true)
 
-  const socket = useSocket(
-    `http://${process.env.REACT_APP_SOCKET_HOST}:${process.env.REACT_APP_SOCKET_PORT}:`,
-    {
-      reconnectionAttempts: 5,
-      reconnectionDelay: 5000,
-      autoConnect: false,
-    }
-  )
+  const socket = useSocket(process.env.REACT_APP_SOCKET_URL as string, {
+    reconnectionAttempts: 5,
+    reconnectionDelay: 5000,
+    autoConnect: false,
+  })
 
   useEffect(() => {
     socket.connect()
