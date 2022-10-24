@@ -24,11 +24,14 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
 
   const [loading, setLoading] = useState(true)
 
-  const socket = useSocket("ws://0.0.0.0:1337", {
-    reconnectionAttempts: 5,
-    reconnectionDelay: 5000,
-    autoConnect: false,
-  })
+  const socket = useSocket(
+    `ws://${process.env.SOCKET_SERVER_HOST}:${process.env.SOCKET_SERVER_PORT}:`,
+    {
+      reconnectionAttempts: 5,
+      reconnectionDelay: 5000,
+      autoConnect: false,
+    }
+  )
 
   useEffect(() => {
     socket.connect()
