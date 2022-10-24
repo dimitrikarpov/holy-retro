@@ -1,15 +1,23 @@
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
-import reportWebVitals from './reportWebVitals'
-import SocketProvider from 'contexts/socket/SocketProvider'
-import { SocketInfo } from './routes/root/SocketInfo'
-import { CreateGame } from 'routes/create/CreateGame'
-import { Player } from 'routes/player/Player'
-import { PeersProvider } from 'contexts/peers/PeersProvider'
-import { Home } from 'routes/root/Home'
+import ReactDOM from "react-dom/client"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import "./index.css"
+import reportWebVitals from "./reportWebVitals"
+import SocketProvider from "contexts/socket/SocketProvider"
+import { SocketInfo } from "./routes/root/SocketInfo"
+import { CreateGame } from "routes/create/CreateGame"
+import { Player } from "routes/player/Player"
+import { PeersProvider } from "contexts/peers/PeersProvider"
+import { Home } from "routes/root/Home"
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+console.log(
+  "SOCKET_SERVER_HOST: ",
+  process.env.SOCKET_SERVER_HOST,
+  "SOCKET_SERVER_PORT: ",
+  process.env.SOCKET_SERVER_PORT,
+  process.env
+)
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <>
     <BrowserRouter>
