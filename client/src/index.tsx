@@ -10,10 +10,10 @@ import { PeersProvider } from "contexts/peers/PeersProvider"
 import { Home } from "routes/root/Home"
 
 console.log(
-  "SOCKET_SERVER_HOST: ",
-  process.env.SOCKET_SERVER_HOST,
-  "SOCKET_SERVER_PORT: ",
-  process.env.SOCKET_SERVER_PORT,
+  "SERVER_HOST: ",
+  process.env.REACT_APP_SOCKET_HOST,
+  "SERVER_PORT: ",
+  process.env.REACT_APP_SOCKET_PORT,
   process.env
 )
 

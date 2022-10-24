@@ -25,7 +25,7 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
   const [loading, setLoading] = useState(true)
 
   const socket = useSocket(
-    `ws://${process.env.SOCKET_SERVER_HOST}:${process.env.SOCKET_SERVER_PORT}:`,
+    `ws://${process.env.REACT_APP_SOCKET_HOST}:${process.env.REACT_APP_SOCKET_PORT}:`,
     {
       reconnectionAttempts: 5,
       reconnectionDelay: 5000,
