@@ -2,7 +2,9 @@
 FROM node:alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
+ARG REACT_APP_SOCKET_URL
 ENV REACT_APP_SOCKET_URL $REACT_APP_SOCKET_URL
+ARG REACT_APP_FOO
 ENV REACT_APP_FOO $REACT_APP_FOO
 COPY package*.json ./
 # RUN npm ci --only=production
