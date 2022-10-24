@@ -18,11 +18,11 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_SOCKET_URL="ws://109.234.39.57:1337"
+        - FOO="cbar"
+        - REACT_APP_FOO="ccbar"
     restart: always
     ports:
       - "443:443"
       - "80:80"
-    environment:
-      - REACT_APP_SOCKET_URL="ws://109.234.39.57:1337"
-      - FOO="cbar"
-      - REACT_APP_FOO="ccbar"
