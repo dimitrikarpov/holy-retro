@@ -6,7 +6,7 @@ COPY package*.json ./
 # RUN npm ci --only=production
 RUN npm install
 COPY . .
-RUN npm build
+RUN npm run build
 
 # stage 2 - build the final image and copy the react build files
 FROM nginx:1.17.8-alpine
