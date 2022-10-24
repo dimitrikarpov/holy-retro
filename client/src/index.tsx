@@ -9,13 +9,7 @@ import { Player } from "routes/player/Player"
 import { PeersProvider } from "contexts/peers/PeersProvider"
 import { Home } from "routes/root/Home"
 
-console.log(
-  "SERVER_HOST: ",
-  process.env.REACT_APP_SOCKET_HOST,
-  "SERVER_PORT: ",
-  process.env.REACT_APP_SOCKET_PORT,
-  process.env
-)
+console.log({ env: process.env })
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
