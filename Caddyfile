@@ -7,7 +7,7 @@ v1451291.hosted-by-vdsina.ru {
   handle /path/* {
     uri strip_prefix /path
     rewrite * /socket.io{path}
-    reverse_proxy localhost:1337 {
+    reverse_proxy server:1337 {
       header_up Host {host}
       header_up X-Real-IP {remote}
     }
