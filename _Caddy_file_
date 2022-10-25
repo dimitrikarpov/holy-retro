@@ -1,0 +1,20 @@
+v1451291.hosted-by-vdsina.ru {
+
+  rewrite /path /path/
+  handle /path/* {
+    uri strip_prefix /path
+    rewrite * /socket.io{path}
+    reverse_proxy localhost:1337 {
+      header_up Host {host}
+      header_up X-Real-IP {remote}
+    }
+  }
+
+
+  reverse_proxy client:5000  {
+    header_down Strict-Transport-Security max-age=31536000;
+   }
+
+
+
+}
