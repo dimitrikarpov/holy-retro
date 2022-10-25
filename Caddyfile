@@ -1,5 +1,5 @@
 v1451291.hosted-by-vdsina.ru {
-  handle /socket.io {
+  handle /socket.io* {
      reverse_proxy localhost:1337
   }
 
