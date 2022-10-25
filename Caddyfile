@@ -1,7 +1,4 @@
 v1451291.hosted-by-vdsina.ru {
-  reverse_proxy client:5000  {
-    header_down Strict-Transport-Security max-age=31536000;
-   }
 
   rewrite /path /path/
   handle /path/* {
@@ -12,4 +9,9 @@ v1451291.hosted-by-vdsina.ru {
       header_up X-Real-IP {remote}
     }
   }
+
+  reverse_proxy client:5000  {
+    header_down Strict-Transport-Security max-age=31536000;
+   }
+
 }
