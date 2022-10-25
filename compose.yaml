@@ -10,7 +10,6 @@ services:
       - "1337:1337"
     environment:
       - PORT=1337
-      - FOO=pbar
 
   # Client
   client:
@@ -20,8 +19,6 @@ services:
       dockerfile: Dockerfile
       args:
         - REACT_APP_SOCKET_URL=http://109.234.39.57:1337
-        - FOO=cbar
-        - REACT_APP_FOO=ccbar
     restart: always
     ports:
       - "443:443"

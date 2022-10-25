@@ -10,8 +10,8 @@ services:
       - ./server:/app
     ports:
       - "1337:1337"
-    env_file:
-      - .env.server.dev
+    environment:
+      - PORT=1337
 
   # Client
   client:
@@ -23,5 +23,5 @@ services:
       - ./client:/app
     ports:
       - "3000:3000"
-    env_file:
-      - .env.client.dev
+    environment:
+      - REACT_APP_SOCKET_URL=http://localhost:1337
