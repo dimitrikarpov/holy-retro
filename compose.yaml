@@ -9,6 +9,7 @@ services:
     ports:
       - "1337:1337"
     environment:
+      - NODE_ENV=production
       - PORT=1337
 
   # Client
@@ -21,5 +22,22 @@ services:
         - REACT_APP_SOCKET_URL=http://109.234.39.57:1337
     restart: always
     ports:
-      - "443:443"
+      - "5000:5000"
+
+  # Caddy server
+  caddy:
+    image: caddy/caddy:2.2.1-alpine
+    container_name: caddy-service
+    restart: unless-stopped
+    ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
