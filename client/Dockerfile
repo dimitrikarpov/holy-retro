@@ -1,4 +1,3 @@
-# stage1 - build react app first 
 FROM node:alpine as build
 RUN npm install --global serve
 WORKDIR /app

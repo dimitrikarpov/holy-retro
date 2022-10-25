@@ -26,7 +26,7 @@ services:
 
   # Caddy server
   caddy:
-    container_name: caddy-proxy
+    container_name: caddy
     image: caddy/caddy:2.6.2-alpine
     restart: unless-stopped
     ports:
