@@ -74,7 +74,7 @@ const SocketProvider: FunctionComponent<ISocketContextComponentProps> = ({
     })
 
     socket.io.on("reconnect_error", (error) => {
-      console.log("Reconnection error: ", error)
+      console.log("Reconnection error: ", { error })
     })
 
     socket.io.on("reconnect_failed", () => {
