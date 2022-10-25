@@ -1,7 +1,6 @@
 services:
   # Socket Server
   server:
-    container_name: server
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -14,7 +13,6 @@ services:
 
   # Client
   client:
-    container_name: client
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -27,7 +25,6 @@ services:
   # Caddy server
   caddy:
     image: caddy/caddy:2.6.2-alpine
-    container_name: caddy-service
     restart: unless-stopped
     ports:
       - "80:80"
