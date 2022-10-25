@@ -3,7 +3,7 @@ v1451291.hosted-by-vdsina.ru {
     reverse_proxy server:1337
   }
 
-  reverse_proxy client:5000  {
+  reverse_proxy client:3000  {
     header_down Strict-Transport-Security max-age=31536000;
   }
 }

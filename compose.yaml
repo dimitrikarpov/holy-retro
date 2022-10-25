@@ -1,6 +1,7 @@
 services:
   # Socket Server
   server:
+    container_name: server
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -13,6 +14,7 @@ services:
 
   # Client
   client:
+    container_name: client
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -20,10 +22,11 @@ services:
         - REACT_APP_SOCKET_URL=https://v1451291.hosted-by-vdsina.ru
     restart: always
     ports:
-      - "5000:5000"
+      - "3000:3000"
 
   # Caddy server
   caddy:
+    container_name: caddy-proxy
     image: caddy/caddy:2.6.2-alpine
     restart: unless-stopped
     ports:
