@@ -19,7 +19,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        - REACT_APP_SOCKET_URL=https://v1451291.hosted-by-vdsina.ru:1337
+        - REACT_APP_SOCKET_URL=ws://v1451291.hosted-by-vdsina.ru:1337
     restart: always
     ports:
       - "5000:5000"
