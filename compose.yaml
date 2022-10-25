@@ -19,7 +19,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        - REACT_APP_SOCKET_URL=http://109.234.39.57:1337
+        - REACT_APP_SOCKET_URL=https://109.234.39.57:1337
     restart: always
     ports:
       - "5000:5000"
