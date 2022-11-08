@@ -1,6 +1,7 @@
 import { createRetroarch, Retroarch } from "holy-retroarch"
 import { TCore } from "holy-retroarch/dist/retroarch-module/CoreManager"
 import { useEffect, useRef } from "react"
+import { waitMs } from "utils/waitMs"
 
 type EmulatorProps = {
   core: TCore
@@ -9,46 +10,43 @@ type EmulatorProps = {
   onStarted: (stream: MediaStream) => void
 }
 
-// let retroarch: Retroarch
-
 export const Emulator: React.FunctionComponent<EmulatorProps> = ({
   core,
   rom,
   save,
   onStarted,
 }) => {
-  console.log("rendered?????????????????????")
-
   const retroarchContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    console.log("fffff", retroarchContainerRef.current)
+
     const startEmulator = async () => {
-      const canvas = document.getElementById("canvas") as HTMLCanvasElement
-      const retroarch = new Retroarch(core, canvas)
+      const retroarch = new Retroarch(
+        core,
+        document.getElementById("canvas") as HTMLCanvasElement
+      )
 
       await retroarch.init()
       retroarch.copyConfig()
 
       if (rom) retroarch.copyRom(rom)
 
-      setTimeout(() => {
-        retroarch.start()
-        setTimeout(() => {
-          const canvasEl = document.getElementById(
-            "canvas"
-          ) as HTMLCanvasElement
-          const videoStream = canvasEl.captureStream(60)
-          const audioStream = window.RA.xdest.stream as MediaStream
+      await waitMs(250)
 
-          const stream = new MediaStream()
-          videoStream.getTracks().forEach((track) => stream.addTrack(track))
-          audioStream.getTracks().forEach((track) => stream.addTrack(track))
+      retroarch.start()
 
-          onStarted(stream)
+      await waitMs(1000)
 
-          console.log({ stream })
-        }, 1000)
-      }, 250)
+      const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
+      const videoStream = canvasEl.captureStream(60)
+      const audioStream = window.RA.xdest.stream as MediaStream
+
+      const stream = new MediaStream()
+      videoStream.getTracks().forEach((track) => stream.addTrack(track))
+      audioStream.getTracks().forEach((track) => stream.addTrack(track))
+
+      onStarted(stream)
     }
 
     startEmulator()

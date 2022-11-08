@@ -33,7 +33,6 @@ export const Player: React.FunctionComponent = () => {
   }, [])
 
   const onEmulatorStarted = (stream: MediaStream) => {
-    console.log("onEmulatorStarted", stream)
     peers[0].instance.addStream(stream)
   }
 
