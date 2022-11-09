@@ -16,41 +16,37 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = ({
   save,
   onStarted,
 }) => {
-  const retroarchContainerRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    console.log("fffff", retroarchContainerRef.current)
+    const startRom = async () => {
+      console.log({ canvasRef: canvasRef.current })
 
-    const startEmulator = async () => {
-      const retroarch = new Retroarch(
+      const retroarch = await createRetroarch({
         core,
-        document.getElementById("canvas") as HTMLCanvasElement
-      )
+        rom,
+        canvas: canvasRef.current as HTMLCanvasElement,
+      })
 
-      await retroarch.init()
-      retroarch.copyConfig()
-
-      if (rom) retroarch.copyRom(rom)
-
-      await waitMs(250)
+      canvasRef.current?.focus()
 
       retroarch.start()
 
-      await waitMs(1000)
+      // await waitMs(1000)
 
-      const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
-      const videoStream = canvasEl.captureStream(60)
-      const audioStream = window.RA.xdest.stream as MediaStream
+      // const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
+      // const videoStream = canvasEl.captureStream(60)
+      // const audioStream = window.RA.xdest.stream as MediaStream
 
-      const stream = new MediaStream()
-      videoStream.getTracks().forEach((track) => stream.addTrack(track))
-      audioStream.getTracks().forEach((track) => stream.addTrack(track))
+      // const stream = new MediaStream()
+      // videoStream.getTracks().forEach((track) => stream.addTrack(track))
+      // audioStream.getTracks().forEach((track) => stream.addTrack(track))
 
-      onStarted(stream)
+      // onStarted(stream)
     }
 
-    startEmulator()
+    startRom()
   }, [])
 
-  return <div ref={retroarchContainerRef}></div>
+  return <canvas ref={canvasRef} id="canvas"></canvas>
 }

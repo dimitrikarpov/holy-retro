@@ -1,3 +1,5 @@
+// import { createRetroarch, Retroarch } from "holy-retroarch"
+
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import "./index.css"
@@ -9,7 +11,15 @@ import { Player } from "routes/player/Player"
 import { PeersProvider } from "contexts/peers/PeersProvider"
 import { Home } from "routes/root/Home"
 
-console.log({ env: process.env })
+// const canvas = document.getElementById("canvas") as HTMLCanvasElement
+
+// export let retroarchLocal: Retroarch
+
+// const downloadRA = async () => {
+//   retroarchLocal = await createRetroarch({ core: "nestopia" })
+// }
+
+// downloadRA()
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(

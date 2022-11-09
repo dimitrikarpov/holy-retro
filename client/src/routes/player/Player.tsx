@@ -40,7 +40,7 @@ export const Player: React.FunctionComponent = () => {
     <>
       <h1>Player page</h1>
       {rom && (
-        <Emulator core="nestopia" rom={rom} onStarted={onEmulatorStarted} />
+        <Emulator core="fceumm" rom={rom} onStarted={onEmulatorStarted} />
       )}
     </>
   )
