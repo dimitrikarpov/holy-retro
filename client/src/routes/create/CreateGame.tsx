@@ -5,7 +5,6 @@ import { CreateGameFomDto, CreateGameForm } from "./CreateGameForm"
 import { CreateGameSummary } from "./CreateGameSummary"
 import { emitAndWaitForAnswer } from "utils/emitAndWaitForAnswer"
 import { PeersContext } from "contexts/peers/PeersContext"
-// import { Recorder } from "routes/player/Recorder"
 import { Video } from "./Video"
 
 export const CreateGame: React.FunctionComponent = () => {
@@ -62,17 +61,7 @@ export const CreateGame: React.FunctionComponent = () => {
       ?.instance.on("stream", (stream) => {
         console.log("go STREAM")
 
-        // // got remote video stream, now let's show it in a video tag
-        // var video = document.querySelector('video') as HTMLVideoElement
-
-        // console.log({ stream })
-
-        // video.srcObject = stream
-        // video.play()
-
-        // setIsStreamReady(true)
-
-        // setStream(stream)
+        setStream(stream)
       })
 
     /** send roles to peers */
