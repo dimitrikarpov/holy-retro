@@ -1,4 +1,4 @@
-import { createRetroarch, Retroarch } from "holy-retroarch"
+import { createRetroarch } from "holy-retroarch"
 import { TCore } from "holy-retroarch/dist/retroarch-module/CoreManager"
 import { useEffect, useRef } from "react"
 import { waitMs } from "utils/waitMs"
@@ -20,29 +20,25 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = ({
 
   useEffect(() => {
     const startRom = async () => {
-      console.log({ canvasRef: canvasRef.current })
-
       const retroarch = await createRetroarch({
         core,
         rom,
         canvas: canvasRef.current as HTMLCanvasElement,
       })
 
-      canvasRef.current?.focus()
-
       retroarch.start()
 
-      // await waitMs(1000)
+      await waitMs(1000)
 
-      // const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
-      // const videoStream = canvasEl.captureStream(60)
-      // const audioStream = window.RA.xdest.stream as MediaStream
+      const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
+      const videoStream = canvasEl.captureStream(60)
+      const audioStream = window.RA.xdest.stream as MediaStream
 
-      // const stream = new MediaStream()
-      // videoStream.getTracks().forEach((track) => stream.addTrack(track))
-      // audioStream.getTracks().forEach((track) => stream.addTrack(track))
+      const stream = new MediaStream()
+      videoStream.getTracks().forEach((track) => stream.addTrack(track))
+      audioStream.getTracks().forEach((track) => stream.addTrack(track))
 
-      // onStarted(stream)
+      onStarted(stream)
     }
 
     startRom()
