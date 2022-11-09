@@ -1,6 +1,6 @@
-import SocketContext from 'contexts/socket/SocketContext'
-import React, { useContext, useState } from 'react'
-import { convertFileToBase64 } from 'utils/covertFileToBase64'
+import SocketContext from "contexts/socket/SocketContext"
+import React, { useContext, useState } from "react"
+import { convertFileToBase64 } from "utils/covertFileToBase64"
 
 export type CreateGameFomDto = {
   rom: string
@@ -38,8 +38,6 @@ export const CreateGameForm: React.FunctionComponent<CreateGameFormProps> = ({
     if (!rom || !player) return
 
     const romAsBase64 = await convertFileToBase64(rom)
-
-    // console.log({ rom })
 
     onSubmit({ rom: romAsBase64, player })
   }

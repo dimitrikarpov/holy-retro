@@ -23,8 +23,11 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = ({
       const retroarch = await createRetroarch({
         core,
         rom,
+        save,
         canvas: canvasRef.current as HTMLCanvasElement,
       })
+
+      await waitMs(1000)
 
       retroarch.start()
 
