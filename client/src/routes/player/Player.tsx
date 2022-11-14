@@ -41,7 +41,11 @@ export const Player: React.FunctionComponent = () => {
     <>
       <h1>Player page</h1>
       {rom && (
-        <Emulator coreUrl={`${cores_url}/fceumm_libretro.js`} rom={rom} />
+        <Emulator
+          coreUrl={`${cores_url}/fceumm_libretro.js`}
+          rom={rom}
+          onStarted={onEmulatorStarted}
+        />
       )}
     </>
   )
