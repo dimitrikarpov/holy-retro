@@ -1,51 +1,69 @@
-import { createRetroarch } from "holy-retroarch"
-import { TCore } from "holy-retroarch/dist/retroarch-module/CoreManager"
-import { useEffect, useRef } from "react"
+import { Retroarch } from "holy-retroarch"
+import { memo, useEffect, useLayoutEffect, useRef } from "react"
 import { waitMs } from "utils/waitMs"
 
 type EmulatorProps = {
-  core: TCore
-  rom?: Uint8Array
-  save?: Uint8Array
-  onStarted: (stream: MediaStream) => void
+  coreUrl: string
+  rom: Uint8Array
+  // save?: Uint8Array
+  // onStarted: (stream: MediaStream) => void
 }
 
-export const Emulator: React.FunctionComponent<EmulatorProps> = ({
-  core,
-  rom,
-  save,
-  onStarted,
-}) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+const canvas = document.getElementById("canvas") as HTMLCanvasElement
 
-  useEffect(() => {
-    const startRom = async () => {
-      const retroarch = await createRetroarch({
-        core,
-        rom,
-        save,
-        canvas: canvasRef.current as HTMLCanvasElement,
-      })
+export const Emulator: React.FunctionComponent<EmulatorProps> = memo(
+  ({ coreUrl, rom }) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null)
 
-      await waitMs(1000)
+    const raRef = useRef<Retroarch>(new Retroarch(coreUrl, canvas))
 
-      retroarch.start()
+    useLayoutEffect(() => {
+      const start = async () => {
+        await raRef.current.init()
+        raRef.current.copyConfig()
+        raRef.current.copyRom(rom)
+        raRef.current.start()
 
-      await waitMs(1000)
+        // await waitMs(1000)
 
-      const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
-      const videoStream = canvasEl.captureStream(60)
-      const audioStream = window.RA.xdest.stream as MediaStream
+        // const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
+        // const videoStream = canvasEl.captureStream(60)
+        // const audioStream = window.RA.xdest.stream as MediaStream
+      }
 
-      const stream = new MediaStream()
-      videoStream.getTracks().forEach((track) => stream.addTrack(track))
-      audioStream.getTracks().forEach((track) => stream.addTrack(track))
+      // const startRom = async () => {
+      //   const retroarch = await createRetroarch({
+      //     core: "fceumm",
+      //     rom,
+      //     // save,
+      //     canvas: canvasRef.current as HTMLCanvasElement,
+      //     // canvas,
+      //   })
 
-      onStarted(stream)
-    }
+      //   // await waitMs(1000)
 
-    startRom()
-  }, [])
+      //   retroarch.start()
 
-  return <canvas ref={canvasRef} id="canvas"></canvas>
-}
+      //   // await waitMs(1000)
+
+      //   // const canvasEl = document.getElementById("canvas") as HTMLCanvasElement
+      //   // const videoStream = canvasEl.captureStream(60)
+      //   // const audioStream = window.RA.xdest.stream as MediaStream
+
+      //   // const stream = new MediaStream()
+      //   // videoStream.getTracks().forEach((track) => stream.addTrack(track))
+      //   // audioStream.getTracks().forEach((track) => stream.addTrack(track))
+
+      //   // onStarted(stream)
+      // }
+
+      setTimeout(() => {
+        start()
+      }, 500)
+    }, [])
+
+    return <h3>f</h3>
+
+    // return <canvas ref={canvasRef} id="canvas"></canvas>
+  }
+)

@@ -1,5 +1,6 @@
-import { PeersContext } from "contexts/peers/PeersContext"
+import { cores_url } from "holy-retroarch"
 import { useContext, useEffect, useState } from "react"
+import { PeersContext } from "contexts/peers/PeersContext"
 import { createPeerMessage, parsePeerMessage } from "routes/create/CreateGame"
 import { convertBase64ToArrayBuffer } from "utils/convertBase64ToArrayBuffer"
 import { Emulator } from "./Emulator"
@@ -40,7 +41,7 @@ export const Player: React.FunctionComponent = () => {
     <>
       <h1>Player page</h1>
       {rom && (
-        <Emulator core="fceumm" rom={rom} onStarted={onEmulatorStarted} />
+        <Emulator coreUrl={`${cores_url}/fceumm_libretro.js`} rom={rom} />
       )}
     </>
   )
